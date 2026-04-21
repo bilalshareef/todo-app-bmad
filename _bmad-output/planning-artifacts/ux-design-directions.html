@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>todo-app-bmad — Design Direction Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #F3F4F6; color: #111827; }
+
+  /* Navigation */
+  .nav { position: fixed; top: 0; left: 0; right: 0; background: #1F2937; color: #fff; z-index: 100; padding: 12px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .nav h1 { font-size: 16px; font-weight: 600; white-space: nowrap; }
+  .nav-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+  .nav-btn { padding: 6px 14px; border-radius: 6px; border: 1px solid #4B5563; background: transparent; color: #D1D5DB; font-size: 13px; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s; }
+  .nav-btn:hover { background: #374151; color: #fff; }
+  .nav-btn.active { background: #3B82F6; border-color: #3B82F6; color: #fff; }
+
+  /* Mockup container */
+  .mockup-container { padding-top: 72px; }
+  .mockup-section { display: none; min-height: calc(100vh - 72px); padding: 40px 24px; }
+  .mockup-section.active { display: block; }
+  .mockup-header { max-width: 720px; margin: 0 auto 32px; }
+  .mockup-header h2 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+  .mockup-header p { font-size: 14px; color: #6B7280; line-height: 1.6; }
+  .mockup-tags { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .tag { font-size: 11px; padding: 3px 10px; border-radius: 12px; background: #E5E7EB; color: #374151; }
+
+  /* Shared app frame */
+  .app-frame { max-width: 640px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+
+  /* ===================== */
+  /* Direction 1: Clean Minimal */
+  /* ===================== */
+  .d1 { background: #FFFFFF; }
+  .d1 .app-title { padding: 32px 24px 0; font-size: 24px; font-weight: 600; color: #111827; }
+  .d1 .input-area { padding: 24px; }
+  .d1 .input-field { width: 100%; padding: 14px 16px; font-size: 16px; font-family: 'Inter', sans-serif; border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB; outline: none; transition: border-color 0.2s; }
+  .d1 .input-field:focus { border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+  .d1 .todo-list { padding: 0 24px 24px; }
+  .d1 .todo-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #F3F4F6; gap: 12px; }
+  .d1 .todo-item:last-child { border-bottom: none; }
+  .d1 .checkbox { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #D1D5DB; cursor: pointer; flex-shrink: 0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .d1 .checkbox.checked { background: #3B82F6; border-color: #3B82F6; }
+  .d1 .checkbox.checked::after { content: '✓'; color: #fff; font-size: 12px; }
+  .d1 .todo-text { flex: 1; font-size: 16px; color: #111827; }
+  .d1 .todo-text.completed { color: #9CA3AF; text-decoration: line-through; }
+  .d1 .delete-btn { width: 32px; height: 32px; border: none; background: transparent; color: #D1D5DB; font-size: 18px; cursor: pointer; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .d1 .delete-btn:hover { background: #FEE2E2; color: #EF4444; }
+
+  /* ===================== */
+  /* Direction 2: Card-Based */
+  /* ===================== */
+  .d2-bg { background: #F9FAFB; }
+  .d2 { background: #FFFFFF; }
+  .d2 .app-title { padding: 32px 24px 0; font-size: 24px; font-weight: 600; color: #111827; text-align: center; }
+  .d2 .input-area { padding: 24px; }
+  .d2 .input-field { width: 100%; padding: 14px 16px; font-size: 16px; font-family: 'Inter', sans-serif; border: none; border-radius: 10px; background: #F3F4F6; outline: none; transition: all 0.2s; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
+  .d2 .input-field:focus { background: #fff; box-shadow: 0 0 0 2px #3B82F6; }
+  .d2 .todo-list { padding: 0 24px 24px; display: flex; flex-direction: column; gap: 8px; }
+  .d2 .todo-card { display: flex; align-items: center; padding: 14px 16px; background: #F9FAFB; border-radius: 10px; gap: 12px; transition: all 0.15s; }
+  .d2 .todo-card:hover { background: #F3F4F6; }
+  .d2 .todo-card.completed-card { opacity: 0.6; }
+  .d2 .checkbox { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #D1D5DB; cursor: pointer; flex-shrink: 0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .d2 .checkbox.checked { background: #10B981; border-color: #10B981; }
+  .d2 .checkbox.checked::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 600; }
+  .d2 .todo-text { flex: 1; font-size: 16px; color: #111827; }
+  .d2 .todo-text.completed { color: #9CA3AF; text-decoration: line-through; }
+  .d2 .delete-btn { width: 32px; height: 32px; border: none; background: transparent; color: #D1D5DB; font-size: 16px; cursor: pointer; border-radius: 6px; opacity: 0; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .d2 .todo-card:hover .delete-btn { opacity: 1; }
+  .d2 .delete-btn:hover { background: #FEE2E2; color: #EF4444; }
+
+  /* ===================== */
+  /* Direction 3: Borderless */
+  /* ===================== */
+  .d3 { background: #FFFFFF; }
+  .d3 .app-title { padding: 40px 24px 0; font-size: 20px; font-weight: 500; color: #6B7280; letter-spacing: 0.05em; text-transform: uppercase; }
+  .d3 .input-area { padding: 20px 24px; }
+  .d3 .input-field { width: 100%; padding: 12px 0; font-size: 18px; font-family: 'Inter', sans-serif; border: none; border-bottom: 2px solid #E5E7EB; background: transparent; outline: none; transition: border-color 0.2s; }
+  .d3 .input-field:focus { border-bottom-color: #3B82F6; }
+  .d3 .todo-list { padding: 8px 24px 24px; }
+  .d3 .todo-item { display: flex; align-items: center; padding: 16px 0; gap: 16px; }
+  .d3 .checkbox { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #D1D5DB; cursor: pointer; flex-shrink: 0; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+  .d3 .checkbox.checked { background: #111827; border-color: #111827; }
+  .d3 .checkbox.checked::after { content: '✓'; color: #fff; font-size: 10px; }
+  .d3 .todo-text { flex: 1; font-size: 16px; color: #111827; }
+  .d3 .todo-text.completed { color: #D1D5DB; text-decoration: line-through; }
+  .d3 .delete-btn { width: 28px; height: 28px; border: none; background: transparent; color: transparent; font-size: 14px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .d3 .todo-item:hover .delete-btn { color: #D1D5DB; }
+  .d3 .delete-btn:hover { color: #EF4444 !important; }
+
+  /* ===================== */
+  /* Direction 4: Bold Header */
+  /* ===================== */
+  .d4 { background: #FFFFFF; overflow: hidden; }
+  .d4 .app-header { background: #1F2937; padding: 32px 24px 28px; }
+  .d4 .app-title { font-size: 24px; font-weight: 600; color: #FFFFFF; margin-bottom: 20px; }
+  .d4 .input-field { width: 100%; padding: 14px 16px; font-size: 16px; font-family: 'Inter', sans-serif; border: none; border-radius: 8px; background: rgba(255,255,255,0.1); color: #fff; outline: none; transition: all 0.2s; }
+  .d4 .input-field::placeholder { color: rgba(255,255,255,0.5); }
+  .d4 .input-field:focus { background: rgba(255,255,255,0.15); box-shadow: 0 0 0 2px rgba(59,130,246,0.5); }
+  .d4 .todo-list { padding: 8px 24px 24px; }
+  .d4 .todo-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #F3F4F6; gap: 12px; }
+  .d4 .todo-item:last-child { border-bottom: none; }
+  .d4 .checkbox { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #D1D5DB; cursor: pointer; flex-shrink: 0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .d4 .checkbox.checked { background: #3B82F6; border-color: #3B82F6; }
+  .d4 .checkbox.checked::after { content: '✓'; color: #fff; font-size: 12px; }
+  .d4 .todo-text { flex: 1; font-size: 16px; color: #111827; }
+  .d4 .todo-text.completed { color: #9CA3AF; text-decoration: line-through; }
+  .d4 .delete-btn { width: 32px; height: 32px; border: none; background: transparent; color: #D1D5DB; font-size: 18px; cursor: pointer; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .d4 .delete-btn:hover { background: #FEE2E2; color: #EF4444; }
+
+  /* ===================== */
+  /* Direction 5: Soft Shadow */
+  /* ===================== */
+  .d5-bg { background: #F3F4F6; }
+  .d5 { background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .d5 .app-title { padding: 32px 24px 0; font-size: 24px; font-weight: 600; color: #111827; }
+  .d5 .input-area { padding: 24px; }
+  .d5 .input-wrapper { display: flex; gap: 8px; }
+  .d5 .input-field { flex: 1; padding: 14px 16px; font-size: 16px; font-family: 'Inter', sans-serif; border: 1px solid #E5E7EB; border-radius: 8px 0 0 8px; background: #fff; outline: none; transition: border-color 0.2s; }
+  .d5 .input-field:focus { border-color: #3B82F6; }
+  .d5 .add-btn { padding: 14px 20px; background: #3B82F6; color: #fff; border: none; border-radius: 0 8px 8px 0; font-size: 16px; font-family: 'Inter', sans-serif; font-weight: 500; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+  .d5 .add-btn:hover { background: #2563EB; }
+  .d5 .todo-list { padding: 0 24px 24px; }
+  .d5 .todo-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #F3F4F6; gap: 12px; }
+  .d5 .todo-item:last-child { border-bottom: none; }
+  .d5 .checkbox { width: 20px; height: 20px; border-radius: 4px; border: 2px solid #D1D5DB; cursor: pointer; flex-shrink: 0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .d5 .checkbox.checked { background: #3B82F6; border-color: #3B82F6; }
+  .d5 .checkbox.checked::after { content: '✓'; color: #fff; font-size: 12px; }
+  .d5 .todo-text { flex: 1; font-size: 16px; color: #111827; }
+  .d5 .todo-text.completed { color: #9CA3AF; text-decoration: line-through; }
+  .d5 .delete-btn { width: 32px; height: 32px; border: none; background: transparent; color: #D1D5DB; font-size: 18px; cursor: pointer; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .d5 .delete-btn:hover { background: #FEE2E2; color: #EF4444; }
+
+  /* ===================== */
+  /* Direction 6: Warm & Friendly */
+  /* ===================== */
+  .d6-bg { background: #FFFBEB; }
+  .d6 { background: #FFFFFF; border: 1px solid #FDE68A; }
+  .d6 .app-title { padding: 32px 24px 0; font-size: 24px; font-weight: 600; color: #92400E; }
+  .d6 .subtitle { padding: 4px 24px 0; font-size: 14px; color: #B45309; }
+  .d6 .input-area { padding: 24px; }
+  .d6 .input-field { width: 100%; padding: 14px 16px; font-size: 16px; font-family: 'Inter', sans-serif; border: 1px solid #FDE68A; border-radius: 8px; background: #FFFBEB; outline: none; transition: all 0.2s; }
+  .d6 .input-field:focus { border-color: #F59E0B; box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+  .d6 .todo-list { padding: 0 24px 24px; }
+  .d6 .todo-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #FEF3C7; gap: 12px; }
+  .d6 .todo-item:last-child { border-bottom: none; }
+  .d6 .checkbox { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #FCD34D; cursor: pointer; flex-shrink: 0; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .d6 .checkbox.checked { background: #F59E0B; border-color: #F59E0B; }
+  .d6 .checkbox.checked::after { content: '✓'; color: #fff; font-size: 12px; }
+  .d6 .todo-text { flex: 1; font-size: 16px; color: #111827; }
+  .d6 .todo-text.completed { color: #D1D5DB; text-decoration: line-through; }
+  .d6 .delete-btn { width: 32px; height: 32px; border: none; background: transparent; color: #FCD34D; font-size: 18px; cursor: pointer; border-radius: 6px; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .d6 .delete-btn:hover { background: #FEE2E2; color: #EF4444; }
+
+  /* ===================== */
+  /* Toast preview */
+  /* ===================== */
+  .toast-preview { position: fixed; bottom: 24px; right: 24px; background: #1F2937; color: #fff; padding: 14px 20px; border-radius: 8px; font-size: 14px; display: none; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 200; max-width: 360px; }
+  .toast-preview .toast-icon { color: #EF4444; font-size: 16px; flex-shrink: 0; }
+  .toast-preview.show { display: flex; animation: slideIn 0.3s ease; }
+  @keyframes slideIn { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 48px 24px; color: #9CA3AF; }
+  .empty-state .emoji { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 16px; }
+
+  /* Comparison view */
+  .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1320px; margin: 0 auto; }
+  .comparison-grid .app-frame { margin: 0; }
+  @media (max-width: 900px) { .comparison-grid { grid-template-columns: 1fr; } }
+  .compare-label { text-align: center; font-size: 13px; font-weight: 500; color: #6B7280; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <h1>todo-app-bmad — Design Directions</h1>
+  <div class="nav-buttons">
+    <button class="nav-btn active" onclick="showSection('d1')">1. Clean Minimal</button>
+    <button class="nav-btn" onclick="showSection('d2')">2. Soft Cards</button>
+    <button class="nav-btn" onclick="showSection('d3')">3. Borderless</button>
+    <button class="nav-btn" onclick="showSection('d4')">4. Bold Header</button>
+    <button class="nav-btn" onclick="showSection('d5')">5. Add Button</button>
+    <button class="nav-btn" onclick="showSection('d6')">6. Warm & Friendly</button>
+    <button class="nav-btn" onclick="showSection('compare')">⚖️ Compare</button>
+    <button class="nav-btn" onclick="showSection('empty')">📭 Empty States</button>
+    <button class="nav-btn" onclick="showToast()">🔔 Toast</button>
+  </div>
+</nav>
+
+<div class="mockup-container">
+
+  <!-- Direction 1: Clean Minimal -->
+  <section id="d1" class="mockup-section active">
+    <div class="mockup-header">
+      <h2>Direction 1: Clean Minimal</h2>
+      <p>The purest expression of our design philosophy. Rounded input with subtle gray background, circle checkboxes, hairline dividers. Maximum white space, minimum visual noise. The content IS the interface.</p>
+      <div class="mockup-tags">
+        <span class="tag">Rounded input</span>
+        <span class="tag">Circle checkboxes</span>
+        <span class="tag">Hairline dividers</span>
+        <span class="tag">Left-aligned title</span>
+      </div>
+    </div>
+    <div class="app-frame d1">
+      <div class="app-title">Todos</div>
+      <div class="input-area">
+        <input class="input-field" type="text" placeholder="What needs to be done?">
+      </div>
+      <div class="todo-list">
+        <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Buy groceries</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Reply to Dana's email</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox checked"></div><span class="todo-text completed">Book dentist appointment</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Review Q3 report</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox checked"></div><span class="todo-text completed">Submit expense report</span><button class="delete-btn">×</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Direction 2: Soft Cards -->
+  <section id="d2" class="mockup-section">
+    <div class="mockup-header">
+      <h2>Direction 2: Soft Cards</h2>
+      <p>Each todo lives in its own soft card with rounded corners. Centered title, inset input field, green completion checkmarks. Delete buttons appear on hover. Feels tactile and modern.</p>
+      <div class="mockup-tags">
+        <span class="tag">Card-per-todo</span>
+        <span class="tag">Square checkboxes</span>
+        <span class="tag">Green completion</span>
+        <span class="tag">Centered title</span>
+        <span class="tag">Hover-reveal delete</span>
+      </div>
+    </div>
+    <div class="app-frame d2 d2-bg" style="background:#F9FAFB;">
+      <div style="background:#fff; border-radius:12px;">
+        <div class="app-title">Todos</div>
+        <div class="input-area">
+          <input class="input-field" type="text" placeholder="What needs to be done?">
+        </div>
+        <div class="todo-list">
+          <div class="todo-card"><div class="checkbox"></div><span class="todo-text">Buy groceries</span><button class="delete-btn">×</button></div>
+          <div class="todo-card"><div class="checkbox"></div><span class="todo-text">Reply to Dana's email</span><button class="delete-btn">×</button></div>
+          <div class="todo-card completed-card"><div class="checkbox checked"></div><span class="todo-text completed">Book dentist appointment</span><button class="delete-btn">×</button></div>
+          <div class="todo-card"><div class="checkbox"></div><span class="todo-text">Review Q3 report</span><button class="delete-btn">×</button></div>
+          <div class="todo-card completed-card"><div class="checkbox checked"></div><span class="todo-text completed">Submit expense report</span><button class="delete-btn">×</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Direction 3: Borderless -->
+  <section id="d3" class="mockup-section">
+    <div class="mockup-header">
+      <h2>Direction 3: Borderless</h2>
+      <p>Ultra-minimal. Uppercase muted title, underline-only input, no borders between items. Small circle checkboxes in dark on completion. The delete button is invisible until hover. Closest to "just a list on paper."</p>
+      <div class="mockup-tags">
+        <span class="tag">Underline input</span>
+        <span class="tag">No dividers</span>
+        <span class="tag">Uppercase title</span>
+        <span class="tag">Dark checkmarks</span>
+        <span class="tag">Hidden delete</span>
+      </div>
+    </div>
+    <div class="app-frame d3">
+      <div class="app-title">TODOS</div>
+      <div class="input-area">
+        <input class="input-field" type="text" placeholder="What needs to be done?">
+      </div>
+      <div class="todo-list">
+        <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Buy groceries</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Reply to Dana's email</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox checked"></div><span class="todo-text completed">Book dentist appointment</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Review Q3 report</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox checked"></div><span class="todo-text completed">Submit expense report</span><button class="delete-btn">×</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Direction 4: Bold Header -->
+  <section id="d4" class="mockup-section">
+    <div class="mockup-header">
+      <h2>Direction 4: Bold Header</h2>
+      <p>Dark header creates a strong visual anchor. The input field lives inside the header with a frosted-glass feel. The list below is clean white. Creates clear visual separation between "input mode" and "list mode."</p>
+      <div class="mockup-tags">
+        <span class="tag">Dark header</span>
+        <span class="tag">Input in header</span>
+        <span class="tag">Strong contrast</span>
+        <span class="tag">Clear zones</span>
+      </div>
+    </div>
+    <div class="app-frame d4">
+      <div class="app-header">
+        <div class="app-title">Todos</div>
+        <input class="input-field" type="text" placeholder="What needs to be done?">
+      </div>
+      <div class="todo-list">
+        <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Buy groceries</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Reply to Dana's email</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox checked"></div><span class="todo-text completed">Book dentist appointment</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Review Q3 report</span><button class="delete-btn">×</button></div>
+        <div class="todo-item"><div class="checkbox checked"></div><span class="todo-text completed">Submit expense report</span><button class="delete-btn">×</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Direction 5: Add Button -->
+  <section id="d5" class="mockup-section">
+    <div class="mockup-header">
+      <h2>Direction 5: Input + Add Button</h2>
+      <p>Adds a visible "Add" button next to the input field. More explicit affordance for adding tasks — user doesn't need to discover that Enter works. Square checkboxes. Traditional but clear.</p>
+      <div class="mockup-tags">
+        <span class="tag">Visible add button</span>
+        <span class="tag">Square checkboxes</span>
+        <span class="tag">Explicit affordance</span>
+        <span class="tag">Traditional layout</span>
+      </div>
+    </div>
+    <div class="app-frame d5 d5-bg" style="background: #F3F4F6;">
+      <div style="background:#fff; border-radius:12px;">
+        <div class="app-title">Todos</div>
+        <div class="input-area">
+          <div class="input-wrapper">
+            <input class="input-field" type="text" placeholder="What needs to be done?">
+            <button class="add-btn">Add</button>
+          </div>
+        </div>
+        <div class="todo-list">
+          <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Buy groceries</span><button class="delete-btn">×</button></div>
+          <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Reply to Dana's email</span><button class="delete-btn">×</button></div>
+          <div class="todo-item"><div class="checkbox checked"></div><span class="todo-text completed">Book dentist appointment</span><button class="delete-btn">×</button></div>
+          <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Review Q3 report</span><button class="delete-btn">×</button></div>
+          <div class="todo-item"><div class="checkbox checked"></div><span class="todo-text completed">Submit expense report</span><button class="delete-btn">×</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Direction 6: Warm & Friendly -->
+  <section id="d6" class="mockup-section">
+    <div class="mockup-header">
+      <h2>Direction 6: Warm & Friendly</h2>
+      <p>Warm amber palette instead of cool blue. Feels inviting and personal — like a notepad on a sunny desk. Softer, more approachable personality. Trades "professional trust" for "personal warmth."</p>
+      <div class="mockup-tags">
+        <span class="tag">Amber accent</span>
+        <span class="tag">Warm tones</span>
+        <span class="tag">Inviting feel</span>
+        <span class="tag">Personal personality</span>
+      </div>
+    </div>
+    <div class="app-frame d6 d6-bg" style="background: #FFFBEB;">
+      <div style="background:#fff; border-radius:12px; border:1px solid #FDE68A;">
+        <div class="app-title" style="color:#92400E;">Todos</div>
+        <div class="subtitle">What's on your mind today?</div>
+        <div class="input-area">
+          <input class="input-field" type="text" placeholder="Add a task..." style="border-color:#FDE68A; background:#FFFBEB;">
+        </div>
+        <div class="todo-list">
+          <div class="todo-item" style="border-color:#FEF3C7;"><div class="checkbox" style="border-color:#FCD34D;"></div><span class="todo-text">Buy groceries</span><button class="delete-btn" style="color:#FCD34D;">×</button></div>
+          <div class="todo-item" style="border-color:#FEF3C7;"><div class="checkbox" style="border-color:#FCD34D;"></div><span class="todo-text">Reply to Dana's email</span><button class="delete-btn" style="color:#FCD34D;">×</button></div>
+          <div class="todo-item" style="border-color:#FEF3C7;"><div class="checkbox checked" style="background:#F59E0B; border-color:#F59E0B;"></div><span class="todo-text completed">Book dentist appointment</span><button class="delete-btn" style="color:#FCD34D;">×</button></div>
+          <div class="todo-item" style="border-color:#FEF3C7;"><div class="checkbox" style="border-color:#FCD34D;"></div><span class="todo-text">Review Q3 report</span><button class="delete-btn" style="color:#FCD34D;">×</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Compare View -->
+  <section id="compare" class="mockup-section">
+    <div class="mockup-header">
+      <h2>Side-by-Side Comparison</h2>
+      <p>Compare the two strongest candidates — Clean Minimal (Direction 1) and Borderless (Direction 3). Both embody intentional minimalism but with different visual weight.</p>
+    </div>
+    <div class="comparison-grid">
+      <div>
+        <div class="compare-label">Direction 1: Clean Minimal</div>
+        <div class="app-frame d1">
+          <div class="app-title">Todos</div>
+          <div class="input-area"><input class="input-field" type="text" placeholder="What needs to be done?"></div>
+          <div class="todo-list">
+            <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Buy groceries</span><button class="delete-btn">×</button></div>
+            <div class="todo-item"><div class="checkbox checked"></div><span class="todo-text completed">Reply to Dana's email</span><button class="delete-btn">×</button></div>
+            <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Book dentist appointment</span><button class="delete-btn">×</button></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="compare-label">Direction 3: Borderless</div>
+        <div class="app-frame d3">
+          <div class="app-title">TODOS</div>
+          <div class="input-area"><input class="input-field" type="text" placeholder="What needs to be done?"></div>
+          <div class="todo-list">
+            <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Buy groceries</span><button class="delete-btn">×</button></div>
+            <div class="todo-item"><div class="checkbox checked"></div><span class="todo-text completed">Reply to Dana's email</span><button class="delete-btn">×</button></div>
+            <div class="todo-item"><div class="checkbox"></div><span class="todo-text">Book dentist appointment</span><button class="delete-btn">×</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Empty States -->
+  <section id="empty" class="mockup-section">
+    <div class="mockup-header">
+      <h2>Empty States</h2>
+      <p>How each direction handles the "all caught up" moment — one of our key design opportunities.</p>
+    </div>
+    <div class="comparison-grid">
+      <div>
+        <div class="compare-label">Clean Minimal — Empty</div>
+        <div class="app-frame d1">
+          <div class="app-title">Todos</div>
+          <div class="input-area"><input class="input-field" type="text" placeholder="What needs to be done?"></div>
+          <div class="empty-state"><div class="emoji">✨</div><p>All caught up! Add a task to get started.</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="compare-label">Bold Header — Empty</div>
+        <div class="app-frame d4">
+          <div class="app-header">
+            <div class="app-title">Todos</div>
+            <input class="input-field" type="text" placeholder="What needs to be done?">
+          </div>
+          <div class="empty-state"><div class="emoji">🎉</div><p>Nothing to do — enjoy the moment!</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="compare-label">Borderless — Empty</div>
+        <div class="app-frame d3">
+          <div class="app-title">TODOS</div>
+          <div class="input-area"><input class="input-field" type="text" placeholder="What needs to be done?"></div>
+          <div class="empty-state"><div class="emoji">📝</div><p>Your list is clear. What's next?</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="compare-label">Warm & Friendly — Empty</div>
+        <div class="app-frame" style="background:#fff; border:1px solid #FDE68A; border-radius:12px;">
+          <div class="app-title" style="padding:32px 24px 0; font-size:24px; font-weight:600; color:#92400E;">Todos</div>
+          <div style="padding:4px 24px 0; font-size:14px; color:#B45309;">What's on your mind today?</div>
+          <div class="input-area" style="padding:24px;"><input class="input-field" type="text" placeholder="Add a task..." style="border:1px solid #FDE68A; border-radius:8px; background:#FFFBEB; padding:14px 16px; font-size:16px; font-family:Inter; width:100%;"></div>
+          <div class="empty-state"><div class="emoji">☀️</div><p>All done! Take a breather.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Toast Preview -->
+<div class="toast-preview" id="toast">
+  <span class="toast-icon">⚠️</span>
+  <span>Couldn't save your task — check your connection and try again.</span>
+</div>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.mockup-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+// Interactive checkboxes
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('checkbox')) {
+    e.target.classList.toggle('checked');
+    const text = e.target.nextElementSibling;
+    if (text) text.classList.toggle('completed');
+    const card = e.target.closest('.todo-card');
+    if (card) card.classList.toggle('completed-card');
+  }
+});
+</script>
+
+</body>
+</html>
