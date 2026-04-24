@@ -1,0 +1,24 @@
+{
+  "name": "todo-app-bmad",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:client": "npm run dev -w packages/client",
+    "dev:server": "npm run dev -w packages/server",
+    "lint": "eslint packages/*/src",
+    "format": "prettier --write \"packages/*/src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"packages/*/src/**/*.{ts,tsx}\"",
+    "test": "npm run test --workspaces --if-present",
+    "test:client": "npm test -w packages/client",
+    "test:server": "npm test -w packages/server"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.4",
+    "prettier": "^3.8.3",
+    "typescript-eslint": "^8.58.2"
+  }
+}
