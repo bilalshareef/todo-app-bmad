@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
-import { createTodo } from '../services/todoService.js'
+import { createTodo, getAllTodos } from '../services/todoService.js'
 
 const createTodoSchema = {
   body: {
@@ -29,9 +29,33 @@ const createTodoSchema = {
   },
 }
 
+const getAllTodosSchema = {
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              text: { type: 'string' },
+              completed: { type: 'boolean' },
+              createdAt: { type: 'string' },
+              updatedAt: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
 const todosRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/', async () => {
-    return { data: [] }
+  fastify.get('/', { schema: getAllTodosSchema }, async () => {
+    const todos = await getAllTodos(fastify.prisma)
+    return { data: todos }
   })
 
   fastify.post('/', { schema: createTodoSchema }, async (request, reply) => {

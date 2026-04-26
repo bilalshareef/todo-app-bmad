@@ -86,6 +86,90 @@ describe('Todo routes', () => {
   })
 })
 
+describe('GET /api/todos', () => {
+  it('returns all todos when multiple exist', async () => {
+    await app.prisma.todo.create({ data: { text: 'First todo' } })
+    await app.prisma.todo.create({ data: { text: 'Second todo' } })
+    await app.prisma.todo.create({ data: { text: 'Third todo' } })
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/todos',
+    })
+
+    expect(response.statusCode).toBe(200)
+    const body = response.json()
+    expect(body.data).toHaveLength(3)
+    expect(body.data[0].text).toBe('First todo')
+    expect(body.data[1].text).toBe('Second todo')
+    expect(body.data[2].text).toBe('Third todo')
+  })
+
+  it('returns todos with all expected fields', async () => {
+    await app.prisma.todo.create({ data: { text: 'Test fields' } })
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/todos',
+    })
+
+    expect(response.statusCode).toBe(200)
+    const todo = response.json().data[0]
+    expect(todo.id).toBeDefined()
+    expect(todo.text).toBe('Test fields')
+    expect(todo.completed).toBe(false)
+    expect(todo.createdAt).toBeDefined()
+    expect(todo.updatedAt).toBeDefined()
+    expect(new Date(todo.createdAt).toISOString()).toBe(todo.createdAt)
+    expect(new Date(todo.updatedAt).toISOString()).toBe(todo.updatedAt)
+  })
+
+  it('returns todos ordered by createdAt ascending', async () => {
+    const todo1 = await app.prisma.todo.create({
+      data: {
+        id: 'todo-b',
+        text: 'Middle',
+        createdAt: new Date('2026-04-26T00:00:01.000Z'),
+      },
+    })
+    const todo2 = await app.prisma.todo.create({
+      data: {
+        id: 'todo-c',
+        text: 'Newest',
+        createdAt: new Date('2026-04-26T00:00:02.000Z'),
+      },
+    })
+    const todo3 = await app.prisma.todo.create({
+      data: {
+        id: 'todo-a',
+        text: 'Oldest',
+        createdAt: new Date('2026-04-26T00:00:00.000Z'),
+      },
+    })
+
+    await app.prisma.todo.create({
+      data: {
+        id: 'todo-d',
+        text: 'Same timestamp later id',
+        createdAt: new Date('2026-04-26T00:00:02.000Z'),
+      },
+    })
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/todos',
+    })
+
+    const body = response.json()
+    expect(body.data.map((todo: { id: string }) => todo.id)).toEqual([
+      todo3.id,
+      todo1.id,
+      todo2.id,
+      'todo-d',
+    ])
+  })
+})
+
 describe('POST /api/todos', () => {
   it('creates a todo with valid body and returns 201 with data envelope', async () => {
     const response = await app.inject({

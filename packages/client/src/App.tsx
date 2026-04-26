@@ -4,7 +4,7 @@ import { TodoInput } from './components/TodoInput'
 import { TodoList } from './components/TodoList'
 
 function App() {
-  const { todos, addTodo } = useTodos()
+  const { todos, addTodo, loading } = useTodos()
 
   return (
     <div className="min-h-screen bg-warm-gray flex items-center justify-center">
@@ -13,7 +13,7 @@ function App() {
         <p className="mt-2 text-medium-gray text-center">Your task management companion</p>
         <div className="mt-6">
           <TodoInput onSubmit={addTodo} />
-          <TodoList todos={todos} />
+          <TodoList todos={todos} loading={loading} />
         </div>
       </div>
     </div>

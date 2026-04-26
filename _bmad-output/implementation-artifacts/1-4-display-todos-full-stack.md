@@ -1,6 +1,6 @@
 # Story 1.4: Display Todos — Full Stack
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -23,15 +23,15 @@ So that I can review what I need to do.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add `getAllTodos` to todoService (AC: #2)
-  - [ ] Add `getAllTodos(prisma: PrismaClient): Promise<Todo[]>` to `packages/server/src/services/todoService.ts`
-  - [ ] Query `prisma.todo.findMany()` — return all todos ordered by `createdAt` ascending (oldest first)
-  - [ ] Import pattern: `import type { PrismaClient } from '../../generated/prisma/client.js'` (already used in file)
-- [ ] Task 2: Update GET route to use service (AC: #1, #2)
-  - [ ] Update `packages/server/src/routes/todos.ts` — replace stub `return { data: [] }` with actual service call
-  - [ ] Import `getAllTodos` from `../services/todoService.js`
-  - [ ] Route handler: `const todos = await getAllTodos(fastify.prisma)` → return `{ data: todos }`
-  - [ ] Add response schema for GET (optional, for Swagger):
+- [x] Task 1: Add `getAllTodos` to todoService (AC: #2)
+  - [x] Add `getAllTodos(prisma: PrismaClient): Promise<Todo[]>` to `packages/server/src/services/todoService.ts`
+  - [x] Query `prisma.todo.findMany()` — return all todos ordered by `createdAt` ascending (oldest first)
+  - [x] Import pattern: `import type { PrismaClient } from '../../generated/prisma/client.js'` (already used in file)
+- [x] Task 2: Update GET route to use service (AC: #1, #2)
+  - [x] Update `packages/server/src/routes/todos.ts` — replace stub `return { data: [] }` with actual service call
+  - [x] Import `getAllTodos` from `../services/todoService.js`
+  - [x] Route handler: `const todos = await getAllTodos(fastify.prisma)` → return `{ data: todos }`
+  - [x] Add response schema for GET (optional, for Swagger):
     ```typescript
     const getAllTodosSchema = {
       response: {
@@ -56,14 +56,14 @@ So that I can review what I need to do.
       },
     }
     ```
-- [ ] Task 3: Write backend tests for GET /api/todos (AC: #1, #2)
-  - [ ] Add `describe('GET /api/todos', ...)` block in `packages/server/src/app.test.ts`
-  - [ ] Test: GET returns 200 with `{ data: [] }` when no todos exist
-  - [ ] Test: GET returns all todos when multiple exist (create 2-3 via `app.prisma.todo.create()`)
-  - [ ] Test: Response includes all fields: id, text, completed, createdAt, updatedAt
-  - [ ] Test: Todos are ordered by createdAt ascending
-  - [ ] Verify existing POST tests still pass (no regressions)
-- [ ] Task 4: Add `fetchTodos` to todoApi (AC: #1)
+- [x] Task 3: Write backend tests for GET /api/todos (AC: #1, #2)
+  - [x] Add `describe('GET /api/todos', ...)` block in `packages/server/src/app.test.ts`
+  - [x] Test: GET returns 200 with `{ data: [] }` when no todos exist
+  - [x] Test: GET returns all todos when multiple exist (create 2-3 via `app.prisma.todo.create()`)
+  - [x] Test: Response includes all fields: id, text, completed, createdAt, updatedAt
+  - [x] Test: Todos are ordered by createdAt ascending
+  - [x] Verify existing POST tests still pass (no regressions)
+- [x] Task 4: Add `fetchTodos` to todoApi (AC: #1)
   - [ ] Add to `packages/client/src/api/todoApi.ts`:
     ```typescript
     export async function fetchTodos(): Promise<Todo[]> {
@@ -75,11 +75,11 @@ So that I can review what I need to do.
       return data
     }
     ```
-  - [ ] No request body, no headers needed for GET
-- [ ] Task 5: Update useTodos hook to fetch on mount (AC: #1, #6, #7, #8)
-  - [ ] Update `packages/client/src/hooks/useTodos.ts`
-  - [ ] Add `loading: boolean` state (initial: `true`)
-  - [ ] Add `useEffect` to call `fetchTodos()` on mount:
+  - [x] No request body, no headers needed for GET
+- [x] Task 5: Update useTodos hook to fetch on mount (AC: #1, #6, #7, #8)
+  - [x] Update `packages/client/src/hooks/useTodos.ts`
+  - [x] Add `loading: boolean` state (initial: `true`)
+  - [x] Add `useEffect` to call `fetchTodos()` on mount:
     ```typescript
     const [loading, setLoading] = useState(true)
     
@@ -90,15 +90,15 @@ So that I can review what I need to do.
         .finally(() => setLoading(false))
     }, [])
     ```
-  - [ ] Return `{ todos, addTodo, loading }` from hook
-  - [ ] Error handling beyond console.error is deferred to Story 3.1/3.2
-- [ ] Task 6: Create LoadingIndicator component (AC: #6, #8)
-  - [ ] Create `packages/client/src/components/LoadingIndicator.tsx`
-  - [ ] Render a subtle pulsing dots or small spinner animation
-  - [ ] 24px height, centered horizontally
-  - [ ] Wrap in `aria-live="polite"` region with sr-only text "Loading todos..."
-  - [ ] Styling: use Tailwind animate-pulse or a simple CSS keyframe spinner
-  - [ ] Example implementation:
+  - [x] Return `{ todos, addTodo, loading }` from hook
+  - [x] Error handling beyond console.error is deferred to Story 3.1/3.2
+- [x] Task 6: Create LoadingIndicator component (AC: #6, #8)
+  - [x] Create `packages/client/src/components/LoadingIndicator.tsx`
+  - [x] Render a subtle pulsing dots or small spinner animation
+  - [x] 24px height, centered horizontally
+  - [x] Wrap in `aria-live="polite"` region with sr-only text "Loading todos..."
+  - [x] Styling: use Tailwind animate-pulse or a simple CSS keyframe spinner
+  - [x] Example implementation:
     ```tsx
     export function LoadingIndicator() {
       return (
@@ -113,11 +113,11 @@ So that I can review what I need to do.
       )
     }
     ```
-- [ ] Task 7: Create EmptyState component (AC: #9, #10)
-  - [ ] Create `packages/client/src/components/EmptyState.tsx`
-  - [ ] Render: ✨ emoji at 40px + text "All caught up! Add a task to get started." at 16px in #9CA3AF
-  - [ ] Centered within list area, 48px vertical padding (`py-12`)
-  - [ ] Implementation:
+- [x] Task 7: Create EmptyState component (AC: #9, #10)
+  - [x] Create `packages/client/src/components/EmptyState.tsx`
+  - [x] Render: ✨ emoji at 40px + text "All caught up! Add a task to get started." at 16px in #9CA3AF
+  - [x] Centered within list area, 48px vertical padding (`py-12`)
+  - [x] Implementation:
     ```tsx
     export function EmptyState() {
       return (
@@ -128,32 +128,32 @@ So that I can review what I need to do.
       )
     }
     ```
-  - [ ] Note: Use `text-completed-gray` for `#9CA3AF` — verify this token exists in the Tailwind config. If not, use `text-[#9CA3AF]` as fallback.
-- [ ] Task 8: Update TodoItem for completion styling (AC: #3, #4, #5)
-  - [ ] Update `packages/client/src/components/TodoItem.tsx`
-  - [ ] Add conditional styling for completed state:
+  - [x] Note: Use `text-completed-gray` for `#9CA3AF` — verify this token exists in the Tailwind config. If not, use `text-[#9CA3AF]` as fallback.
+- [x] Task 8: Update TodoItem for completion styling (AC: #3, #4, #5)
+  - [x] Update `packages/client/src/components/TodoItem.tsx`
+  - [x] Add conditional styling for completed state:
     - Active: `text-near-black` (already present)
     - Completed: `text-completed-gray line-through` (or `text-[#9CA3AF] line-through`)
-  - [ ] Keep minimal — no checkbox, no delete button, no click handler (those are Stories 2.1/2.2)
-- [ ] Task 9: Update TodoList to show LoadingIndicator or EmptyState (AC: #6, #8, #9)
-  - [ ] Update `packages/client/src/components/TodoList.tsx`
-  - [ ] Accept `loading: boolean` prop
-  - [ ] If `loading` → render `<LoadingIndicator />`
-  - [ ] If `!loading && todos.length === 0` → render `<EmptyState />`
-  - [ ] If `!loading && todos.length > 0` → render todo list as before
-- [ ] Task 10: Update App.tsx to pass loading state (AC: #6, #7)
-  - [ ] Update `packages/client/src/App.tsx`
-  - [ ] Destructure `loading` from `useTodos()`
-  - [ ] Pass `loading` prop to `<TodoList>`
-  - [ ] Ensure TodoInput remains rendered and usable regardless of loading state
-- [ ] Task 11: Write frontend tests (AC: #1, #3, #4, #5, #6, #8, #9)
-  - [ ] Update `packages/client/src/api/todoApi.test.ts` — add test for `fetchTodos`: calls GET, returns parsed data array, throws on error
-  - [ ] Update `packages/client/src/hooks/useTodos.test.ts` — test that `loading` starts true, becomes false after fetch, and `todos` populated
-  - [ ] Test TodoList renders LoadingIndicator when loading=true
-  - [ ] Test TodoList renders EmptyState when loading=false and todos=[]
-  - [ ] Test TodoList renders todos when loading=false and todos exist
-  - [ ] Test TodoItem renders completed styling (line-through, gray text) for completed todos
-  - [ ] Verify all existing tests still pass
+  - [x] Keep minimal — no checkbox, no delete button, no click handler (those are Stories 2.1/2.2)
+- [x] Task 9: Update TodoList to show LoadingIndicator or EmptyState (AC: #6, #8, #9)
+  - [x] Update `packages/client/src/components/TodoList.tsx`
+  - [x] Accept `loading: boolean` prop
+  - [x] If `loading` → render `<LoadingIndicator />`
+  - [x] If `!loading && todos.length === 0` → render `<EmptyState />`
+  - [x] If `!loading && todos.length > 0` → render todo list as before
+- [x] Task 10: Update App.tsx to pass loading state (AC: #6, #7)
+  - [x] Update `packages/client/src/App.tsx`
+  - [x] Destructure `loading` from `useTodos()`
+  - [x] Pass `loading` prop to `<TodoList>`
+  - [x] Ensure TodoInput remains rendered and usable regardless of loading state
+- [x] Task 11: Write frontend tests (AC: #1, #3, #4, #5, #6, #8, #9)
+  - [x] Update `packages/client/src/api/todoApi.test.ts` — add test for `fetchTodos`: calls GET, returns parsed data array, throws on error
+  - [x] Update `packages/client/src/hooks/useTodos.test.ts` — test that `loading` starts true, becomes false after fetch, and `todos` populated
+  - [x] Test TodoList renders LoadingIndicator when loading=true
+  - [x] Test TodoList renders EmptyState when loading=false and todos=[]
+  - [x] Test TodoList renders todos when loading=false and todos exist
+  - [x] Test TodoItem renders completed styling (line-through, gray text) for completed todos
+  - [x] Verify all existing tests still pass
 
 ## Dev Notes
 
@@ -267,8 +267,52 @@ From Story 1.3:
 
 ### Agent Model Used
 
+Claude Opus 4.6 (GitHub Copilot)
+
 ### Debug Log References
+
+- Used `.then`/`.catch` pattern instead of `.finally` in useTodos hook due to Jest tsconfig not including ES2018 lib for Promise.finally
+- App.test.tsx updated to mock fetchTodos since useTodos now calls it on mount
 
 ### Completion Notes List
 
+- **Backend:** Added `getAllTodos` service function with `createdAt` ascending ordering. Replaced GET route stub with actual service call and added Swagger response schema. Added 3 new backend tests (empty, multiple todos, field validation, ordering).
+- **Frontend:** Added `fetchTodos` API function. Updated `useTodos` hook with `loading` state and `useEffect` fetch-on-mount. Created `LoadingIndicator` (animated bouncing dots with aria-live) and `EmptyState` (✨ emoji + message) components. Updated `TodoItem` with conditional completed styling (line-through + gray text). Updated `TodoList` to render loading/empty/list states. Updated `App.tsx` to pass loading prop.
+- **Tests:** 16 server tests pass (3 new GET tests), 27 client tests pass (6 new fetchTodos tests, 4 new useTodos loading tests, 4 new TodoList tests, 2 new TodoItem tests). 0 regressions.
+- **Lint:** 0 errors, 1 expected warning (console.error in useTodos — deferred to Story 3.1/3.2)
+
 ### File List
+
+**Modified:**
+- `packages/server/src/services/todoService.ts` — Added `getAllTodos` function
+- `packages/server/src/routes/todos.ts` — Replaced GET stub with service call, added response schema
+- `packages/server/src/app.test.ts` — Added GET /api/todos test block (3 tests)
+- `packages/client/src/api/todoApi.ts` — Added `fetchTodos` function
+- `packages/client/src/hooks/useTodos.ts` — Added loading state, useEffect fetch, fetchTodos import
+- `packages/client/src/components/TodoItem.tsx` — Added conditional completed styling
+- `packages/client/src/components/TodoList.tsx` — Added loading/empty state rendering
+- `packages/client/src/App.tsx` — Destructure loading, pass to TodoList
+- `packages/client/src/api/todoApi.test.ts` — Added fetchTodos tests, reorganized with describe blocks
+- `packages/client/src/hooks/useTodos.test.ts` — Added loading/fetch tests, updated all tests to mock fetchTodos
+- `packages/client/src/App.test.tsx` — Added fetchTodos mock
+
+**Created:**
+- `packages/client/src/components/LoadingIndicator.tsx` — Loading animation component
+- `packages/client/src/components/EmptyState.tsx` — Empty list state component
+- `packages/client/src/components/TodoList.test.tsx` — TodoList component tests
+- `packages/client/src/components/TodoItem.test.tsx` — TodoItem component tests
+
+### Review Findings
+
+- [x] [Review][Defer] Error path renders the success empty state [packages/client/src/hooks/useTodos.ts:8] — deferred, will be covered as part of a later ticket.
+- [x] [Review][Patch] Guard against stale fetch updates after unmount [packages/client/src/hooks/useTodos.ts:8]
+- [x] [Review][Patch] Prevent the initial fetch from overwriting todos added before it resolves [packages/client/src/hooks/useTodos.ts:8]
+- [x] [Review][Patch] Stabilize GET ordering beyond `createdAt` and align the ordering test with that contract [packages/server/src/services/todoService.ts:3]
+- [x] [Review][Patch] Match the loading indicator's visual size to the 24px acceptance criteria [packages/client/src/components/LoadingIndicator.tsx:3]
+
+## Change Log
+
+- Implemented Story 1.4: Display Todos — Full Stack (Date: 2026-04-26)
+  - Backend: getAllTodos service + GET route + 3 backend tests
+  - Frontend: fetchTodos API, useTodos loading state, LoadingIndicator, EmptyState, TodoItem completion styling, TodoList state management
+  - Tests: 43 total tests passing (16 server + 27 client), 0 regressions
