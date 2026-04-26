@@ -1,6 +1,6 @@
 # Story 1.3: Create Todo — Full Stack
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -21,67 +21,72 @@ So that I can capture what I need to do instantly.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create todoService with createTodo (AC: #3, #6)
-  - [ ] Create `packages/server/src/services/todoService.ts`
-  - [ ] Implement `createTodo(prisma: PrismaClient, text: string)` — trim the text, then call `prisma.todo.create({ data: { text: trimmedText } })`
-  - [ ] Trim whitespace server-side before persisting (defense-in-depth — frontend also trims)
-  - [ ] Return the full Todo record (includes auto-generated id, createdAt, updatedAt, default completed=false)
-- [ ] Task 2: Add POST route with JSON Schema validation (AC: #1, #2, #3, #8)
-  - [ ] Update `packages/server/src/routes/todos.ts` — add POST `/` route
-  - [ ] Define JSON Schema for request body: `{ type: 'object', required: ['text'], properties: { text: { type: 'string', minLength: 1 } } }`
-  - [ ] Define JSON Schema for 201 response (optional but recommended for Swagger)
-  - [ ] Route handler: extract `text` from body, call `todoService.createTodo(fastify.prisma, text)`, return `{ data: todo }` with 201
-  - [ ] Verify Fastify JSON Schema validation rejects empty/missing `text` with 400
-- [ ] Task 3: Write backend tests (AC: #1, #2, #3, #6, #8)
-  - [ ] Add tests to `packages/server/src/app.test.ts` in a new describe block for POST /api/todos
-  - [ ] Test: POST with valid body `{ text: "Buy groceries" }` returns 201 + `{ data: { id, text, completed: false, createdAt, updatedAt } }`
-  - [ ] Test: POST with empty body `{}` returns 400 with Fastify validation error format
-  - [ ] Test: POST with `{ text: "" }` returns 400 (minLength: 1 validation)
-  - [ ] Test: POST with `{ text: "   " }` — decide whether to trim server-side (recommended: trim + reject if empty after trim)
-  - [ ] Test: Verify createdAt and updatedAt are ISO date strings in response
-  - [ ] Test: Verify all existing tests still pass (no regressions)
-- [ ] Task 4: Create frontend Todo type (AC: #4)
-  - [ ] Create `packages/client/src/types/todo.ts`
-  - [ ] Define `Todo` interface: `{ id: string, text: string, completed: boolean, createdAt: string, updatedAt: string }`
-  - [ ] Define `CreateTodoRequest` interface: `{ text: string }`
-- [ ] Task 5: Create todoApi service layer (AC: #1)
-  - [ ] Create `packages/client/src/api/todoApi.ts`
-  - [ ] Implement `createTodo(text: string): Promise<Todo>` — POST to `/api/todos` with `{ text }`, parse `{ data: Todo }` envelope, return the Todo
-  - [ ] Use native `fetch` — no axios
-  - [ ] Throw on non-OK response (throw an Error with the response status/message)
-  - [ ] Set `Content-Type: application/json` header
-- [ ] Task 6: Create useTodos hook (AC: #4, #5)
-  - [ ] Create `packages/client/src/hooks/useTodos.ts`
-  - [ ] State: `todos: Todo[]` (starts empty — fetching on load is Story 1.4)
-  - [ ] Implement `addTodo(text: string): Promise<void>`:
+- [x] Task 1: Create todoService with createTodo (AC: #3, #6)
+  - [x] Create `packages/server/src/services/todoService.ts`
+  - [x] Implement `createTodo(prisma: PrismaClient, text: string)` — trim the text, then call `prisma.todo.create({ data: { text: trimmedText } })`
+  - [x] Trim whitespace server-side before persisting (defense-in-depth — frontend also trims)
+  - [x] Return the full Todo record (includes auto-generated id, createdAt, updatedAt, default completed=false)
+- [x] Task 2: Add POST route with JSON Schema validation (AC: #1, #2, #3, #8)
+  - [x] Update `packages/server/src/routes/todos.ts` — add POST `/` route
+  - [x] Define JSON Schema for request body: `{ type: 'object', required: ['text'], properties: { text: { type: 'string', minLength: 1 } } }`
+  - [x] Define JSON Schema for 201 response (optional but recommended for Swagger)
+  - [x] Route handler: extract `text` from body, call `todoService.createTodo(fastify.prisma, text)`, return `{ data: todo }` with 201
+  - [x] Verify Fastify JSON Schema validation rejects empty/missing `text` with 400
+- [x] Task 3: Write backend tests (AC: #1, #2, #3, #6, #8)
+  - [x] Add tests to `packages/server/src/app.test.ts` in a new describe block for POST /api/todos
+  - [x] Test: POST with valid body `{ text: "Buy groceries" }` returns 201 + `{ data: { id, text, completed: false, createdAt, updatedAt } }`
+  - [x] Test: POST with empty body `{}` returns 400 with Fastify validation error format
+  - [x] Test: POST with `{ text: "" }` returns 400 (minLength: 1 validation)
+  - [x] Test: POST with `{ text: "   " }` — trim server-side, whitespace passes schema minLength:1 but gets trimmed to empty by service
+  - [x] Test: Verify createdAt and updatedAt are ISO date strings in response
+  - [x] Test: Verify all existing tests still pass (no regressions)
+- [x] Task 4: Create frontend Todo type (AC: #4)
+  - [x] Create `packages/client/src/types/todo.ts`
+  - [x] Define `Todo` interface: `{ id: string, text: string, completed: boolean, createdAt: string, updatedAt: string }`
+  - [x] Define `CreateTodoRequest` interface: `{ text: string }`
+- [x] Task 5: Create todoApi service layer (AC: #1)
+  - [x] Create `packages/client/src/api/todoApi.ts`
+  - [x] Implement `createTodo(text: string): Promise<Todo>` — POST to `/api/todos` with `{ text }`, parse `{ data: Todo }` envelope, return the Todo
+  - [x] Use native `fetch` — no axios
+  - [x] Throw on non-OK response (throw an Error with the response status/message)
+  - [x] Set `Content-Type: application/json` header
+- [x] Task 6: Create useTodos hook (AC: #4, #5)
+  - [x] Create `packages/client/src/hooks/useTodos.ts`
+  - [x] State: `todos: Todo[]` (starts empty — fetching on load is Story 1.4)
+  - [x] Implement `addTodo(text: string): Promise<void>`:
     - Call `todoApi.createTodo(text)`
     - On success: append returned Todo to `todos` state
     - On failure: re-throw error (error handling/toast is Story 3.1)
-  - [ ] Return `{ todos, addTodo }`
-- [ ] Task 7: Create TodoInput component (AC: #1, #5, #7)
-  - [ ] Create `packages/client/src/components/TodoInput.tsx`
-  - [ ] Render a controlled `<input>` with:
+  - [x] Return `{ todos, addTodo }`
+- [x] Task 7: Create TodoInput component (AC: #1, #5, #7)
+  - [x] Create `packages/client/src/components/TodoInput.tsx`
+  - [x] Render a controlled `<input>` with:
     - Placeholder: "What needs to be done?"
     - `aria-label="Add a new task"`
     - `autoFocus` on mount
     - `onKeyDown` handler: if Enter + non-empty trimmed text → call `onSubmit(text)` prop + clear input
     - If Enter + empty/whitespace → do nothing (silent rejection)
-  - [ ] Styling (per UX spec): `h-12 w-full rounded-lg bg-warm-gray border border-border-gray focus:ring-2 focus:ring-accent-blue focus:outline-none px-4 text-near-black placeholder:text-medium-gray font-sans`
-- [ ] Task 8: Create minimal TodoList and TodoItem (AC: #4)
-  - [ ] Create `packages/client/src/components/TodoList.tsx` — renders `<ul>` with todos.map → TodoItem. Minimal version for Story 1.3; enhanced in Stories 1.4/1.5.
-  - [ ] Create `packages/client/src/components/TodoItem.tsx` — renders `<li>` with todo text. Basic text display; checkbox/delete/styling comes in Stories 2.1/2.2.
-  - [ ] TodoList `aria-label="Todo list"` on `<ul>`
-- [ ] Task 9: Wire components into App.tsx (AC: #4, #5)
-  - [ ] Update `packages/client/src/App.tsx`
-  - [ ] Import and use `useTodos` hook
-  - [ ] Render `TodoInput` passing `addTodo` as `onSubmit` prop
-  - [ ] Render `TodoList` passing `todos` array
-  - [ ] Basic centered layout (will be replaced by AppShell in Story 1.5)
-- [ ] Task 10: Write frontend tests (AC: #1, #4, #5, #7)
-  - [ ] Create `packages/client/src/components/TodoInput.test.tsx` — test enter-to-submit, clear after submit, silent rejection of empty input, auto-focus
-  - [ ] Create `packages/client/src/api/todoApi.test.ts` — test createTodo calls fetch correctly, handles success/error responses
-  - [ ] Create `packages/client/src/hooks/useTodos.test.ts` — test addTodo appends to todos state
-  - [ ] Verify existing App.test.tsx still passes
+  - [x] Styling (per UX spec): `h-12 w-full rounded-lg bg-warm-gray border border-border-gray focus:ring-2 focus:ring-accent-blue focus:outline-none px-4 text-near-black placeholder:text-medium-gray font-sans`
+- [x] Task 8: Create minimal TodoList and TodoItem (AC: #4)
+  - [x] Create `packages/client/src/components/TodoList.tsx` — renders `<ul>` with todos.map → TodoItem. Minimal version for Story 1.3; enhanced in Stories 1.4/1.5.
+  - [x] Create `packages/client/src/components/TodoItem.tsx` — renders `<li>` with todo text. Basic text display; checkbox/delete/styling comes in Stories 2.1/2.2.
+  - [x] TodoList `aria-label="Todo list"` on `<ul>`
+- [x] Task 9: Wire components into App.tsx (AC: #4, #5)
+  - [x] Update `packages/client/src/App.tsx`
+  - [x] Import and use `useTodos` hook
+  - [x] Render `TodoInput` passing `addTodo` as `onSubmit` prop
+  - [x] Render `TodoList` passing `todos` array
+  - [x] Basic centered layout (will be replaced by AppShell in Story 1.5)
+- [x] Task 10: Write frontend tests (AC: #1, #4, #5, #7)
+  - [x] Create `packages/client/src/components/TodoInput.test.tsx` — test enter-to-submit, clear after submit, silent rejection of empty input, auto-focus
+  - [x] Create `packages/client/src/api/todoApi.test.ts` — test createTodo calls fetch correctly, handles success/error responses
+  - [x] Create `packages/client/src/hooks/useTodos.test.ts` — test addTodo appends to todos state
+  - [x] Verify existing App.test.tsx still passes
+
+### Review Findings
+
+- [x] [Review][Patch] Reject whitespace-only todos after normalization [packages/server/src/services/todoService.ts:3]
+- [x] [Review][Patch] Make POST /api/todos tests enforce the rejection contract instead of allowing 201 or 400 [packages/server/src/app.test.ts:120]
 
 ## Dev Notes
 
@@ -366,8 +371,42 @@ packages/client/src/App.test.tsx      # MODIFY — update for new App structure
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.6 (GitHub Copilot)
 
 ### Completion Notes List
 
+- **Task 1:** Created `todoService.ts` with `createTodo()` function that trims text and delegates to Prisma. Uses `type` import from generated Prisma client path.
+- **Task 2:** Added POST `/` route to `todos.ts` with JSON Schema validation (body requires non-empty `text` string, `additionalProperties: false`). Response schema for 201 defined for Swagger. Route handler is thin — extracts text, calls service, returns `{ data: todo }` with 201.
+- **Task 3:** Added 6 backend tests in `app.test.ts` covering: valid creation (201 + envelope), empty body (400), empty text (400), whitespace-only text (trim behavior), whitespace trimming on valid text, and missing `text` field (400). All 13 server tests pass.
+- **Task 4:** Created `Todo` and `CreateTodoRequest` interfaces in `types/todo.ts`.
+- **Task 5:** Created `todoApi.ts` using native `fetch`, POST to `/api/todos`, parses `{ data }` envelope, throws on non-OK response.
+- **Task 6:** Created `useTodos` hook with `todos` state (starts empty) and `addTodo` that calls API then appends on success. Errors re-throw.
+- **Task 7:** Created `TodoInput` component with controlled input, enter-to-submit, trim + silent rejection of empty/whitespace, auto-focus, proper aria-label, and UX-spec Tailwind styling.
+- **Task 8:** Created minimal `TodoList` (`<ul>` with `aria-label`) and `TodoItem` (`<li>` with text) components.
+- **Task 9:** Wired `useTodos`, `TodoInput`, and `TodoList` into `App.tsx` with centered layout.
+- **Task 10:** Installed `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`. Created 7 TodoInput tests, 3 todoApi tests, 4 useTodos tests. All 15 frontend tests pass including existing App.test.tsx.
+- **Full regression:** 13 server tests + 15 client tests = 28 tests, all passing. Lint checks clean.
+
 ### File List
+
+**New files:**
+- `packages/server/src/services/todoService.ts`
+- `packages/client/src/types/todo.ts`
+- `packages/client/src/api/todoApi.ts`
+- `packages/client/src/api/todoApi.test.ts`
+- `packages/client/src/hooks/useTodos.ts`
+- `packages/client/src/hooks/useTodos.test.ts`
+- `packages/client/src/components/TodoInput.tsx`
+- `packages/client/src/components/TodoInput.test.tsx`
+- `packages/client/src/components/TodoList.tsx`
+- `packages/client/src/components/TodoItem.tsx`
+
+**Modified files:**
+- `packages/server/src/routes/todos.ts`
+- `packages/server/src/app.test.ts`
+- `packages/client/src/App.tsx`
+- `packages/client/package.json`
+
+### Change Log
+
+- **2026-04-26:** Implemented Story 1.3 Create Todo Full Stack — backend POST /api/todos with JSON Schema validation + todoService layer, frontend TodoInput/TodoList/TodoItem components with useTodos hook and todoApi service. 28 tests total, all passing.

@@ -86,6 +86,92 @@ describe('Todo routes', () => {
   })
 })
 
+describe('POST /api/todos', () => {
+  it('creates a todo with valid body and returns 201 with data envelope', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/todos',
+      payload: { text: 'Buy groceries' },
+    })
+
+    expect(response.statusCode).toBe(201)
+    const body = response.json()
+    expect(body.data).toMatchObject({
+      text: 'Buy groceries',
+      completed: false,
+    })
+    expect(body.data.id).toBeDefined()
+    expect(body.data.createdAt).toBeDefined()
+    expect(body.data.updatedAt).toBeDefined()
+    // Verify ISO date strings
+    expect(new Date(body.data.createdAt).toISOString()).toBe(body.data.createdAt)
+    expect(new Date(body.data.updatedAt).toISOString()).toBe(body.data.updatedAt)
+  })
+
+  it('returns 400 when body is empty object', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/todos',
+      payload: {},
+    })
+
+    expect(response.statusCode).toBe(400)
+    const body = response.json()
+    expect(body.statusCode).toBe(400)
+    expect(body.error).toBe('Bad Request')
+    expect(body.code).toBe('FST_ERR_VALIDATION')
+  })
+
+  it('returns 400 when text is empty string', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/todos',
+      payload: { text: '' },
+    })
+
+    expect(response.statusCode).toBe(400)
+    const body = response.json()
+    expect(body.statusCode).toBe(400)
+    expect(body.code).toBe('FST_ERR_VALIDATION')
+  })
+
+  it('returns 400 when text is whitespace only', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/todos',
+      payload: { text: '   ' },
+    })
+
+    expect(response.statusCode).toBe(400)
+    const body = response.json()
+    expect(body.statusCode).toBe(400)
+    expect(body.error).toBe('Bad Request')
+    expect(body.code).toBe('FST_ERR_VALIDATION')
+  })
+
+  it('trims whitespace from valid text', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/todos',
+      payload: { text: '  Buy groceries  ' },
+    })
+
+    expect(response.statusCode).toBe(201)
+    const body = response.json()
+    expect(body.data.text).toBe('Buy groceries')
+  })
+
+  it('returns 400 when text field is missing', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/todos',
+      payload: { title: 'wrong field' },
+    })
+
+    expect(response.statusCode).toBe(400)
+  })
+})
+
 describe('Global error handler', () => {
   it('returns 500 without internal details for unhandled errors', async () => {
     // Create a separate app instance with the error route registered before ready()
