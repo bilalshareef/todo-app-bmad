@@ -17,8 +17,15 @@
     "test:server": "npm test -w packages/server"
   },
   "devDependencies": {
+    "@types/pg": "^8.20.0",
     "eslint": "^9.39.4",
     "prettier": "^3.8.3",
+    "prisma": "^7.8.0",
     "typescript-eslint": "^8.58.2"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "pg": "^8.20.0"
   }
 }

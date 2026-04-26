@@ -12,6 +12,7 @@ build/
 
 # Prisma
 .prisma/
+packages/server/generated/
 
 # IDE
 .idea/
