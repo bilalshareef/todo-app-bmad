@@ -22,7 +22,7 @@ describe('TodoList', () => {
     render(<TodoList todos={todos} loading={false} />)
     expect(screen.getByText('Buy groceries')).toBeInTheDocument()
     expect(screen.getByText('Walk the dog')).toBeInTheDocument()
-    expect(screen.getByLabelText('Todo list')).toBeInTheDocument()
+    expect(screen.getByLabelText('Todo list')).toHaveClass('divide-y', 'divide-[#F3F4F6]')
   })
 
   it('does not render todo list when loading', () => {

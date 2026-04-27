@@ -28,4 +28,29 @@ describe('App', () => {
     })
     document.body.removeChild(container)
   })
+
+  it('should render "Todos" heading', async () => {
+    const container = document.createElement('div')
+    document.body.appendChild(container)
+    const root = createRoot(container)
+    await act(async () => {
+      root.render(<App />)
+    })
+    const heading = container.querySelector('h1')
+    const input = container.querySelector('input[aria-label="Add a new task"]')
+    const shellContent = input?.parentElement
+    const listWrapper = input?.nextElementSibling
+
+    expect(heading).not.toBeNull()
+    expect(heading!.textContent).toBe('Todos')
+    expect(input).not.toBeNull()
+    expect(shellContent?.className).toContain('mt-6')
+    expect(listWrapper).not.toBeNull()
+    expect(listWrapper?.className).toContain('mt-6')
+
+    await act(async () => {
+      root.unmount()
+    })
+    document.body.removeChild(container)
+  })
 })
