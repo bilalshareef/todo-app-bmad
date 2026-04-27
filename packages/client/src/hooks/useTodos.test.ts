@@ -220,4 +220,135 @@ describe('useTodos', () => {
 
     expect(result.current.todos).toEqual([])
   })
+
+  it('toggleTodo flips completed state and updates todo in state', async () => {
+    const mockTodo = {
+      id: '1',
+      text: 'Buy groceries',
+      completed: false,
+      createdAt: '2026-04-26T00:00:00.000Z',
+      updatedAt: '2026-04-26T00:00:00.000Z',
+    }
+    const updatedTodo = { ...mockTodo, completed: true, updatedAt: '2026-04-26T00:00:01.000Z' }
+
+    mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo])
+    mockedTodoApi.updateTodo.mockResolvedValue(updatedTodo)
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.toggleTodo('1')
+    })
+
+    expect(mockedTodoApi.updateTodo).toHaveBeenCalledWith('1', true)
+    expect(result.current.todos).toEqual([updatedTodo])
+  })
+
+  it('toggleTodo flips completed todo back to uncompleted', async () => {
+    const mockTodo = {
+      id: '1',
+      text: 'Buy groceries',
+      completed: true,
+      createdAt: '2026-04-26T00:00:00.000Z',
+      updatedAt: '2026-04-26T00:00:00.000Z',
+    }
+    const updatedTodo = { ...mockTodo, completed: false, updatedAt: '2026-04-26T00:00:01.000Z' }
+
+    mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo])
+    mockedTodoApi.updateTodo.mockResolvedValue(updatedTodo)
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.toggleTodo('1')
+    })
+
+    expect(mockedTodoApi.updateTodo).toHaveBeenCalledWith('1', false)
+    expect(result.current.todos).toEqual([updatedTodo])
+  })
+
+  it('toggleTodo does nothing for non-existent todo id', async () => {
+    mockedTodoApi.fetchTodos.mockResolvedValue([])
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.toggleTodo('nonexistent')
+    })
+
+    expect(mockedTodoApi.updateTodo).not.toHaveBeenCalled()
+  })
+
+  it('toggleTodo logs and preserves state when update fails', async () => {
+    const mockTodo = {
+      id: '1',
+      text: 'Buy groceries',
+      completed: false,
+      createdAt: '2026-04-26T00:00:00.000Z',
+      updatedAt: '2026-04-26T00:00:00.000Z',
+    }
+
+    mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo])
+    mockedTodoApi.updateTodo.mockRejectedValue(new Error('Failed to update todo: 500'))
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.toggleTodo('1')
+    })
+
+    expect(console.error).toHaveBeenCalledWith('Failed to update todo:', expect.any(Error))
+    expect(result.current.todos).toEqual([mockTodo])
+  })
+
+  it('toggleTodo ignores repeated clicks while a request is in flight', async () => {
+    const mockTodo = {
+      id: '1',
+      text: 'Buy groceries',
+      completed: false,
+      createdAt: '2026-04-26T00:00:00.000Z',
+      updatedAt: '2026-04-26T00:00:00.000Z',
+    }
+    const updatedTodo = { ...mockTodo, completed: true, updatedAt: '2026-04-26T00:00:01.000Z' }
+    let resolveUpdate: ((todo: typeof updatedTodo) => void) | undefined
+
+    mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo])
+    mockedTodoApi.updateTodo.mockImplementation(
+      () => new Promise((resolve) => {
+        resolveUpdate = resolve
+      }),
+    )
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      const firstToggle = result.current.toggleTodo('1')
+      const secondToggle = result.current.toggleTodo('1')
+      resolveUpdate?.(updatedTodo)
+      await Promise.all([firstToggle, secondToggle])
+    })
+
+    expect(mockedTodoApi.updateTodo).toHaveBeenCalledTimes(1)
+    expect(result.current.todos).toEqual([updatedTodo])
+  })
 })

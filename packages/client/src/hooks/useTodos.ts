@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { Todo } from '../types/todo'
-import { createTodo as apiCreateTodo, fetchTodos } from '../api/todoApi'
+import { createTodo as apiCreateTodo, fetchTodos, updateTodo as apiUpdateTodo } from '../api/todoApi'
 
 function mergeTodos(fetchedTodos: Todo[], currentTodos: Todo[]): Todo[] {
   if (currentTodos.length === 0) {
@@ -14,6 +14,7 @@ function mergeTodos(fetchedTodos: Todo[], currentTodos: Todo[]): Todo[] {
 export function useTodos() {
   const [todos, setTodos] = useState<Todo[]>([])
   const [loading, setLoading] = useState(true)
+  const pendingToggleIds = useRef(new Set<string>())
 
   useEffect(() => {
     let isActive = true
@@ -46,5 +47,25 @@ export function useTodos() {
     setTodos((prev) => [...prev, newTodo])
   }
 
-  return { todos, addTodo, loading }
+  async function toggleTodo(id: string): Promise<void> {
+    if (pendingToggleIds.current.has(id)) {
+      return
+    }
+
+    const todo = todos.find((t) => t.id === id)
+    if (!todo) return
+
+    pendingToggleIds.current.add(id)
+
+    try {
+      const updatedTodo = await apiUpdateTodo(id, !todo.completed)
+      setTodos((prev) => prev.map((t) => (t.id === id ? updatedTodo : t)))
+    } catch (error) {
+      console.error('Failed to update todo:', error)
+    } finally {
+      pendingToggleIds.current.delete(id)
+    }
+  }
+
+  return { todos, addTodo, toggleTodo, loading }
 }

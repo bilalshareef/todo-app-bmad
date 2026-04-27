@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
-import { createTodo, getAllTodos } from '../services/todoService.js'
+import { createTodo, getAllTodos, updateTodo } from '../services/todoService.js'
 
 const createTodoSchema = {
   body: {
@@ -52,6 +52,41 @@ const getAllTodosSchema = {
   },
 }
 
+const updateTodoSchema = {
+  params: {
+    type: 'object' as const,
+    required: ['id'],
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+    },
+  },
+  body: {
+    type: 'object' as const,
+    required: ['completed'],
+    properties: {
+      completed: { type: 'boolean' },
+    },
+    additionalProperties: false,
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            text: { type: 'string' },
+            completed: { type: 'boolean' },
+            createdAt: { type: 'string' },
+            updatedAt: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
+}
+
 const todosRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get('/', { schema: getAllTodosSchema }, async () => {
     const todos = await getAllTodos(fastify.prisma)
@@ -62,6 +97,20 @@ const todosRoutes: FastifyPluginAsync = async (fastify) => {
     const { text } = request.body as { text: string }
     const todo = await createTodo(fastify.prisma, text)
     return reply.status(201).send({ data: todo })
+  })
+
+  fastify.patch('/:id', { schema: updateTodoSchema }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+    const { completed } = request.body as { completed: boolean }
+    try {
+      const todo = await updateTodo(fastify.prisma, id, { completed })
+      return { data: todo }
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && (error as { code: string }).code === 'P2025') {
+        return reply.status(404).send({ statusCode: 404, error: 'Not Found', message: 'Todo not found' })
+      }
+      throw error
+    }
   })
 }
 

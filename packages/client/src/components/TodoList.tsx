@@ -6,9 +6,10 @@ import { EmptyState } from './EmptyState'
 interface TodoListProps {
   todos: Todo[]
   loading: boolean
+  onToggle: (id: string) => void
 }
 
-export function TodoList({ todos, loading }: TodoListProps) {
+export function TodoList({ todos, loading, onToggle }: TodoListProps) {
   if (loading) {
     return <LoadingIndicator />
   }
@@ -20,7 +21,7 @@ export function TodoList({ todos, loading }: TodoListProps) {
   return (
     <ul aria-label="Todo list" className="divide-y divide-[#F3F4F6]">
       {todos.map((todo) => (
-        <TodoItem key={todo.id} todo={todo} />
+        <TodoItem key={todo.id} todo={todo} onToggle={onToggle} />
       ))}
     </ul>
   )

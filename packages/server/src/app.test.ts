@@ -256,6 +256,102 @@ describe('POST /api/todos', () => {
   })
 })
 
+describe('PATCH /api/todos/:id', () => {
+  it('marks a todo as completed and returns 200 with updated todo', async () => {
+    const created = await app.prisma.todo.create({ data: { text: 'Test completion' } })
+
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/api/todos/${created.id}`,
+      payload: { completed: true },
+    })
+
+    expect(response.statusCode).toBe(200)
+    const body = response.json()
+    expect(body.data).toMatchObject({
+      id: created.id,
+      text: 'Test completion',
+      completed: true,
+    })
+    expect(body.data.updatedAt).toBeDefined()
+  })
+
+  it('marks a completed todo as uncompleted and returns 200', async () => {
+    const created = await app.prisma.todo.create({ data: { text: 'Test uncompletion', completed: true } })
+
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/api/todos/${created.id}`,
+      payload: { completed: false },
+    })
+
+    expect(response.statusCode).toBe(200)
+    const body = response.json()
+    expect(body.data).toMatchObject({
+      id: created.id,
+      text: 'Test uncompletion',
+      completed: false,
+    })
+  })
+
+  it('returns 400 when completed field is missing', async () => {
+    const created = await app.prisma.todo.create({ data: { text: 'Test missing field' } })
+
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/api/todos/${created.id}`,
+      payload: {},
+    })
+
+    expect(response.statusCode).toBe(400)
+    const body = response.json()
+    expect(body.statusCode).toBe(400)
+    expect(body.error).toBe('Bad Request')
+  })
+
+  it('returns 404 for non-existent todo id', async () => {
+    const response = await app.inject({
+      method: 'PATCH',
+      url: '/api/todos/00000000-0000-0000-0000-000000000000',
+      payload: { completed: true },
+    })
+
+    expect(response.statusCode).toBe(404)
+    const body = response.json()
+    expect(body.statusCode).toBe(404)
+    expect(body.error).toBe('Not Found')
+    expect(body.message).toBe('Todo not found')
+  })
+
+  it('returns 400 for malformed todo id', async () => {
+    const response = await app.inject({
+      method: 'PATCH',
+      url: '/api/todos/not-a-uuid',
+      payload: { completed: true },
+    })
+
+    expect(response.statusCode).toBe(400)
+    const body = response.json()
+    expect(body.statusCode).toBe(400)
+    expect(body.error).toBe('Bad Request')
+  })
+
+  it('returns 400 when body has invalid type for completed', async () => {
+    const created = await app.prisma.todo.create({ data: { text: 'Test invalid type' } })
+
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/api/todos/${created.id}`,
+      payload: { completed: 'yes' },
+    })
+
+    expect(response.statusCode).toBe(400)
+    const body = response.json()
+    expect(body.statusCode).toBe(400)
+    expect(body.error).toBe('Bad Request')
+  })
+})
+
 describe('Global error handler', () => {
   it('returns 500 without internal details for unhandled errors', async () => {
     // Create a separate app instance with the error route registered before ready()

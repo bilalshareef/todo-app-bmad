@@ -8,3 +8,7 @@ export async function createTodo(prisma: PrismaClient, text: string) {
   const trimmedText = text.trim()
   return prisma.todo.create({ data: { text: trimmedText } })
 }
+
+export async function updateTodo(prisma: PrismaClient, id: string, data: { completed: boolean }) {
+  return prisma.todo.update({ where: { id }, data: { completed: data.completed } })
+}

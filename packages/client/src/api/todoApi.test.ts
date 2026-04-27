@@ -1,4 +1,4 @@
-import { createTodo, fetchTodos } from './todoApi'
+import { createTodo, fetchTodos, updateTodo } from './todoApi'
 
 describe('todoApi', () => {
   const originalFetch = globalThis.fetch
@@ -93,6 +93,58 @@ describe('todoApi', () => {
       })
 
       await expect(createTodo('')).rejects.toThrow('Failed to create todo: 400')
+    })
+  })
+
+  describe('updateTodo', () => {
+    it('sends PATCH request with correct URL, method, headers, and body', async () => {
+      const mockTodo = {
+        id: '1',
+        text: 'Buy groceries',
+        completed: true,
+        createdAt: '2026-04-26T00:00:00.000Z',
+        updatedAt: '2026-04-26T00:00:01.000Z',
+      }
+
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockTodo }),
+      })
+
+      await updateTodo('1', true)
+
+      expect(globalThis.fetch).toHaveBeenCalledWith('/api/todos/1', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: true }),
+      })
+    })
+
+    it('returns parsed Todo on success', async () => {
+      const mockTodo = {
+        id: '1',
+        text: 'Buy groceries',
+        completed: true,
+        createdAt: '2026-04-26T00:00:00.000Z',
+        updatedAt: '2026-04-26T00:00:01.000Z',
+      }
+
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: mockTodo }),
+      })
+
+      const result = await updateTodo('1', true)
+      expect(result).toEqual(mockTodo)
+    })
+
+    it('throws on non-OK response', async () => {
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+      })
+
+      await expect(updateTodo('1', true)).rejects.toThrow('Failed to update todo: 404')
     })
   })
 })
