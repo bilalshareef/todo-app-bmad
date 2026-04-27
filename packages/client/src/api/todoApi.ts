@@ -38,3 +38,14 @@ export async function updateTodo(id: string, completed: boolean): Promise<Todo> 
   const { data } = await response.json()
   return data
 }
+
+export async function deleteTodo(id: string): Promise<{ id: string }> {
+  const response = await fetch(`${API_BASE}/${id}`, {
+    method: 'DELETE',
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to delete todo: ${response.status}`)
+  }
+  const { data } = await response.json()
+  return data
+}

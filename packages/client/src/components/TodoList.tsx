@@ -7,9 +7,10 @@ interface TodoListProps {
   todos: Todo[]
   loading: boolean
   onToggle: (id: string) => void
+  onDelete: (id: string) => void
 }
 
-export function TodoList({ todos, loading, onToggle }: TodoListProps) {
+export function TodoList({ todos, loading, onToggle, onDelete }: TodoListProps) {
   if (loading) {
     return <LoadingIndicator />
   }
@@ -21,7 +22,7 @@ export function TodoList({ todos, loading, onToggle }: TodoListProps) {
   return (
     <ul aria-label="Todo list" className="divide-y divide-[#F3F4F6]">
       {todos.map((todo) => (
-        <TodoItem key={todo.id} todo={todo} onToggle={onToggle} />
+        <TodoItem key={todo.id} todo={todo} onToggle={onToggle} onDelete={onDelete} />
       ))}
     </ul>
   )

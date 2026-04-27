@@ -352,7 +352,64 @@ describe('PATCH /api/todos/:id', () => {
   })
 })
 
-describe('Global error handler', () => {
+describe('DELETE /api/todos/:id', () => {
+  it('deletes a todo and returns 200 with { data: { id } }', async () => {
+    const created = await app.prisma.todo.create({ data: { text: 'To be deleted' } })
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: `/api/todos/${created.id}`,
+    })
+
+    expect(response.statusCode).toBe(200)
+    const body = response.json()
+    expect(body.data).toEqual({ id: created.id })
+  })
+
+  it('deleted todo no longer appears in GET /api/todos', async () => {
+    const todo1 = await app.prisma.todo.create({ data: { text: 'Keep this' } })
+    const todo2 = await app.prisma.todo.create({ data: { text: 'Delete this' } })
+
+    await app.inject({
+      method: 'DELETE',
+      url: `/api/todos/${todo2.id}`,
+    })
+
+    const response = await app.inject({
+      method: 'GET',
+      url: '/api/todos',
+    })
+
+    const body = response.json()
+    expect(body.data).toHaveLength(1)
+    expect(body.data[0].id).toBe(todo1.id)
+  })
+
+  it('returns 404 for non-existent UUID', async () => {
+    const response = await app.inject({
+      method: 'DELETE',
+      url: '/api/todos/00000000-0000-0000-0000-000000000000',
+    })
+
+    expect(response.statusCode).toBe(404)
+    const body = response.json()
+    expect(body.statusCode).toBe(404)
+    expect(body.error).toBe('Not Found')
+    expect(body.message).toBe('Todo not found')
+  })
+
+  it('returns 400 for invalid (non-UUID) id', async () => {
+    const response = await app.inject({
+      method: 'DELETE',
+      url: '/api/todos/not-a-uuid',
+    })
+
+    expect(response.statusCode).toBe(400)
+    const body = response.json()
+    expect(body.statusCode).toBe(400)
+    expect(body.error).toBe('Bad Request')
+  })
+})
   it('returns 500 without internal details for unhandled errors', async () => {
     // Create a separate app instance with the error route registered before ready()
     const errorApp = createApp()
@@ -412,7 +469,6 @@ describe('Global error handler', () => {
 
     await validationApp.close()
   })
-})
 
 describe('CORS', () => {
   it('includes CORS headers in response', async () => {

@@ -5,13 +5,13 @@ import { TodoList } from './components/TodoList'
 import { AppShell } from './components/AppShell'
 
 function App() {
-  const { todos, addTodo, toggleTodo, loading } = useTodos()
+  const { todos, addTodo, toggleTodo, deleteTodo, loading } = useTodos()
 
   return (
     <AppShell>
       <TodoInput onSubmit={addTodo} />
       <div className="mt-6">
-        <TodoList todos={todos} loading={loading} onToggle={toggleTodo} />
+        <TodoList todos={todos} loading={loading} onToggle={toggleTodo} onDelete={deleteTodo} />
       </div>
     </AppShell>
   )

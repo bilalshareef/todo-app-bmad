@@ -1,4 +1,4 @@
-import { createTodo, fetchTodos, updateTodo } from './todoApi'
+import { createTodo, fetchTodos, updateTodo, deleteTodo } from './todoApi'
 
 describe('todoApi', () => {
   const originalFetch = globalThis.fetch
@@ -145,6 +145,40 @@ describe('todoApi', () => {
       })
 
       await expect(updateTodo('1', true)).rejects.toThrow('Failed to update todo: 404')
+    })
+  })
+
+  describe('deleteTodo', () => {
+    it('sends DELETE request with correct URL', async () => {
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: { id: '1' } }),
+      })
+
+      await deleteTodo('1')
+
+      expect(globalThis.fetch).toHaveBeenCalledWith('/api/todos/1', {
+        method: 'DELETE',
+      })
+    })
+
+    it('returns parsed { id } data on success', async () => {
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: { id: '1' } }),
+      })
+
+      const result = await deleteTodo('1')
+      expect(result).toEqual({ id: '1' })
+    })
+
+    it('throws on non-OK response', async () => {
+      globalThis.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+      })
+
+      await expect(deleteTodo('1')).rejects.toThrow('Failed to delete todo: 404')
     })
   })
 })

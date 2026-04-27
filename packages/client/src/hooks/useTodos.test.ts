@@ -351,4 +351,84 @@ describe('useTodos', () => {
     expect(mockedTodoApi.updateTodo).toHaveBeenCalledTimes(1)
     expect(result.current.todos).toEqual([updatedTodo])
   })
+
+  it('deleteTodo removes todo from state after successful API call', async () => {
+    const mockTodo1 = {
+      id: '1',
+      text: 'Buy groceries',
+      completed: false,
+      createdAt: '2026-04-26T00:00:00.000Z',
+      updatedAt: '2026-04-26T00:00:00.000Z',
+    }
+    const mockTodo2 = {
+      id: '2',
+      text: 'Walk the dog',
+      completed: false,
+      createdAt: '2026-04-26T00:00:01.000Z',
+      updatedAt: '2026-04-26T00:00:01.000Z',
+    }
+
+    mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo1, mockTodo2])
+    mockedTodoApi.deleteTodo.mockResolvedValue({ id: '1' })
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.deleteTodo('1')
+    })
+
+    expect(mockedTodoApi.deleteTodo).toHaveBeenCalledWith('1')
+    expect(result.current.todos).toEqual([mockTodo2])
+  })
+
+  it('deleteTodo preserves remaining todos', async () => {
+    const mockTodos = [
+      { id: '1', text: 'First', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' },
+      { id: '2', text: 'Second', completed: true, createdAt: '2026-04-26T00:00:01.000Z', updatedAt: '2026-04-26T00:00:01.000Z' },
+      { id: '3', text: 'Third', completed: false, createdAt: '2026-04-26T00:00:02.000Z', updatedAt: '2026-04-26T00:00:02.000Z' },
+    ]
+
+    mockedTodoApi.fetchTodos.mockResolvedValue(mockTodos)
+    mockedTodoApi.deleteTodo.mockResolvedValue({ id: '2' })
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.deleteTodo('2')
+    })
+
+    expect(result.current.todos).toEqual([mockTodos[0], mockTodos[2]])
+  })
+
+  it('deleteTodo leaves state unchanged when the API call fails', async () => {
+    const mockTodos = [
+      { id: '1', text: 'First', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' },
+      { id: '2', text: 'Second', completed: true, createdAt: '2026-04-26T00:00:01.000Z', updatedAt: '2026-04-26T00:00:01.000Z' },
+    ]
+
+    mockedTodoApi.fetchTodos.mockResolvedValue(mockTodos)
+    const deleteError = new Error('Failed to delete todo: 500')
+    mockedTodoApi.deleteTodo.mockRejectedValue(deleteError)
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.deleteTodo('1')
+    })
+
+    expect(console.error).toHaveBeenCalledWith('Failed to delete todo:', deleteError)
+    expect(result.current.todos).toEqual(mockTodos)
+  })
 })

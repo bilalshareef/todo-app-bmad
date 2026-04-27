@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Todo } from '../types/todo'
-import { createTodo as apiCreateTodo, fetchTodos, updateTodo as apiUpdateTodo } from '../api/todoApi'
+import { createTodo as apiCreateTodo, fetchTodos, updateTodo as apiUpdateTodo, deleteTodo as apiDeleteTodo } from '../api/todoApi'
 
 function mergeTodos(fetchedTodos: Todo[], currentTodos: Todo[]): Todo[] {
   if (currentTodos.length === 0) {
@@ -67,5 +67,14 @@ export function useTodos() {
     }
   }
 
-  return { todos, addTodo, toggleTodo, loading }
+  async function deleteTodo(id: string): Promise<void> {
+    try {
+      await apiDeleteTodo(id)
+      setTodos((prev) => prev.filter((t) => t.id !== id))
+    } catch (error) {
+      console.error('Failed to delete todo:', error)
+    }
+  }
+
+  return { todos, addTodo, toggleTodo, deleteTodo, loading }
 }

@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify'
-import { createTodo, getAllTodos, updateTodo } from '../services/todoService.js'
+import { createTodo, getAllTodos, updateTodo, deleteTodo } from '../services/todoService.js'
 
 const createTodoSchema = {
   body: {
@@ -87,6 +87,29 @@ const updateTodoSchema = {
   },
 }
 
+const deleteTodoSchema = {
+  params: {
+    type: 'object' as const,
+    required: ['id'],
+    properties: {
+      id: { type: 'string', format: 'uuid' },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
+}
+
 const todosRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get('/', { schema: getAllTodosSchema }, async () => {
     const todos = await getAllTodos(fastify.prisma)
@@ -105,6 +128,19 @@ const todosRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const todo = await updateTodo(fastify.prisma, id, { completed })
       return { data: todo }
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && (error as { code: string }).code === 'P2025') {
+        return reply.status(404).send({ statusCode: 404, error: 'Not Found', message: 'Todo not found' })
+      }
+      throw error
+    }
+  })
+
+  fastify.delete('/:id', { schema: deleteTodoSchema }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+    try {
+      const todo = await deleteTodo(fastify.prisma, id)
+      return { data: { id: todo.id } }
     } catch (error) {
       if (error instanceof Error && 'code' in error && (error as { code: string }).code === 'P2025') {
         return reply.status(404).send({ statusCode: 404, error: 'Not Found', message: 'Todo not found' })

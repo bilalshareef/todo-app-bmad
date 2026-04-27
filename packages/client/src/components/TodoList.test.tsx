@@ -5,18 +5,19 @@ import type { Todo } from '../types/todo'
 
 describe('TodoList', () => {
   const mockOnToggle = jest.fn()
+  const mockOnDelete = jest.fn()
 
   afterEach(() => {
     jest.resetAllMocks()
   })
 
   it('renders LoadingIndicator when loading is true', () => {
-    render(<TodoList todos={[]} loading={true} onToggle={mockOnToggle} />)
+    render(<TodoList todos={[]} loading={true} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
     expect(screen.getByText('Loading todos...')).toBeInTheDocument()
   })
 
   it('renders EmptyState when loading is false and todos is empty', () => {
-    render(<TodoList todos={[]} loading={false} onToggle={mockOnToggle} />)
+    render(<TodoList todos={[]} loading={false} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
     expect(screen.getByText('All caught up! Add a task to get started.')).toBeInTheDocument()
   })
 
@@ -25,7 +26,7 @@ describe('TodoList', () => {
       { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' },
       { id: '2', text: 'Walk the dog', completed: true, createdAt: '2026-04-26T00:00:01.000Z', updatedAt: '2026-04-26T00:00:01.000Z' },
     ]
-    render(<TodoList todos={todos} loading={false} onToggle={mockOnToggle} />)
+    render(<TodoList todos={todos} loading={false} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
     expect(screen.getByText('Buy groceries')).toBeInTheDocument()
     expect(screen.getByText('Walk the dog')).toBeInTheDocument()
     expect(screen.getByLabelText('Todo list')).toHaveClass('divide-y', 'divide-[#F3F4F6]')
@@ -35,7 +36,7 @@ describe('TodoList', () => {
     const todos: Todo[] = [
       { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' },
     ]
-    render(<TodoList todos={todos} loading={true} onToggle={mockOnToggle} />)
+    render(<TodoList todos={todos} loading={true} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
     expect(screen.queryByText('Buy groceries')).not.toBeInTheDocument()
   })
 
@@ -43,9 +44,17 @@ describe('TodoList', () => {
     const todos: Todo[] = [
       { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' },
     ]
-    const { container } = render(<TodoList todos={todos} loading={false} onToggle={mockOnToggle} />)
-    const li = container.querySelector('li')!
-    fireEvent.click(li)
+    render(<TodoList todos={todos} loading={false} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Buy groceries' }))
     expect(mockOnToggle).toHaveBeenCalledWith('1')
+  })
+
+  it('forwards onDelete to TodoItem components', () => {
+    const todos: Todo[] = [
+      { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' },
+    ]
+    render(<TodoList todos={todos} loading={false} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    fireEvent.click(screen.getByLabelText('Delete task: Buy groceries'))
+    expect(mockOnDelete).toHaveBeenCalledWith('1')
   })
 })

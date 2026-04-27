@@ -12,3 +12,7 @@ export async function createTodo(prisma: PrismaClient, text: string) {
 export async function updateTodo(prisma: PrismaClient, id: string, data: { completed: boolean }) {
   return prisma.todo.update({ where: { id }, data: { completed: data.completed } })
 }
+
+export async function deleteTodo(prisma: PrismaClient, id: string) {
+  return prisma.todo.delete({ where: { id } })
+}
