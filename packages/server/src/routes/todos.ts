@@ -84,6 +84,14 @@ const updateTodoSchema = {
         },
       },
     },
+    404: {
+      type: 'object',
+      properties: {
+        statusCode: { type: 'number' },
+        error: { type: 'string' },
+        message: { type: 'string' },
+      },
+    },
   },
 }
 
@@ -105,6 +113,14 @@ const deleteTodoSchema = {
             id: { type: 'string' },
           },
         },
+      },
+    },
+    404: {
+      type: 'object',
+      properties: {
+        statusCode: { type: 'number' },
+        error: { type: 'string' },
+        message: { type: 'string' },
       },
     },
   },

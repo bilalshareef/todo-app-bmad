@@ -1,6 +1,6 @@
 # Story 1.6: Containerization — Dockerfiles for Frontend & Backend
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -292,6 +292,22 @@ Recent commits show all 4 epics completed (stories 1.1–1.5, 2.1–2.2, 3.1–3
 - `docker-compose.yml` already exists at project root with PostgreSQL service
 - No existing Dockerfiles or `.dockerignore` files in the project
 - The `packages/server/generated/prisma/` directory is gitignored but must be generated during Docker build
+
+### Review Findings
+
+- [x] [Review][Decision] **Port 80 vs 8080 conflict** — Accepted: port 8080 used throughout; non-root nginx can't bind 80. Practical for prod (load balancer handles 80/443).
+- [x] [Review][Decision] **Out-of-scope changes in todos.ts** — Kept: 404 response schemas are a valid improvement bundled with this commit.
+- [x] [Review][Patch] Non-deterministic builds — `npm install` without lockfile [packages/server/Dockerfile:9, packages/client/Dockerfile:9]
+- [x] [Review][Patch] NODE_ENV not set in server production stage [packages/server/Dockerfile:19]
+- [x] [Review][Patch] Client depends_on server without `condition: service_healthy` [docker-compose.yml:40]
+- [x] [Review][Patch] Server depends_on db uses `service_started` — db has no healthcheck [docker-compose.yml:28]
+- [x] [Review][Patch] index.html served without no-cache header — stale HTML after redeploy [packages/client/nginx.conf:7]
+- [x] [Review][Patch] prisma.config.ts copied to production but no TypeScript runtime — `prisma migrate deploy` in container will fail [packages/server/Dockerfile:25]
+- [x] [Review][Defer] Hardcoded DB credentials in docker-compose.yml — standard for local dev, security improvement for production config later
+- [x] [Review][Defer] Fragile sed-based import rewriting in server Dockerfile — Prisma ESM workaround, revisit when Prisma supports ESM natively
+- [x] [Review][Defer] nginx.conf missing security headers (X-Frame-Options, CSP, etc.) — production hardening task
+- [x] [Review][Defer] 404 schema uses `type: 'number'` instead of `'integer'` for statusCode — pre-existing, not introduced by this story
+- [x] [Review][Defer] Health endpoint doesn't verify database connectivity — application-level change, not containerization scope
 
 ### References
 

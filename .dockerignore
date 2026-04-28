@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build output
+**/dist/
+**/build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Prisma generated client (rebuilt during Docker build)
+packages/server/generated/
+
+# Coverage & tests
+coverage/
+*.test.ts
+*.test.tsx
+__mocks__/
+
+# IDE & OS
+.idea/
+.DS_Store
+*.swp
+*.swo
+*.log
+
+# Git
+.git/
+
+# Documentation & planning (not needed in images)
+_bmad/
+_bmad-output/
+docs/
+README.md
+LICENSE

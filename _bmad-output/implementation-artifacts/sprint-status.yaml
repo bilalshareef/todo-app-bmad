@@ -43,13 +43,13 @@ story_location: _bmad-output/implementation-artifacts
 
 development_status:
   # Epic 1: Project Foundation & Core Task Management
-  epic-1: in-progress
+  epic-1: done
   1-1-project-scaffold-and-monorepo-setup: done
   1-2-database-setup-and-api-foundation: done
   1-3-create-todo-full-stack: done
   1-4-display-todos-full-stack: done
   1-5-app-shell-and-layout: done
-  1-6-containerization-dockerfiles: ready-for-dev
+  1-6-containerization-dockerfiles: done
   epic-1-retrospective: optional
 
   # Epic 2: Task Lifecycle — Complete & Delete
