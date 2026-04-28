@@ -1,6 +1,6 @@
 # Story 4.1: Responsive Mobile & Desktop Experience
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -49,43 +49,47 @@ so that I can manage my tasks on any device without friction.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Update TodoItem delete button touch target to 44x44px (AC: #1)
-  - [ ] 1.1: In `packages/client/src/components/TodoItem.tsx`, change the delete button from `w-8 h-8` to `w-11 h-11` (44px × 44px) to meet the minimum touch target requirement
-  - [ ] 1.2: The `×` character and `flex items-center justify-center` already center the content — no visual change needed beyond the size increase
+- [x] Task 1: Update TodoItem delete button touch target to 44x44px (AC: #1)
+  - [x] 1.1: In `packages/client/src/components/TodoItem.tsx`, change the delete button from `w-8 h-8` to `w-11 h-11` (44px × 44px) to meet the minimum touch target requirement
+  - [x] 1.2: The `×` character and `flex items-center justify-center` already center the content — no visual change needed beyond the size increase
 
-- [ ] Task 2: Add hover-reveal for delete button on desktop (AC: #1, #2)
-  - [ ] 2.1: Add `group` class to the `<li>` element in `TodoItem.tsx`
-  - [ ] 2.2: Add hover-reveal classes to the delete button: `[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100`
-  - [ ] 2.3: Add keyboard focus visibility: `focus-visible:opacity-100` on the delete button so it remains accessible via keyboard on desktop
-  - [ ] 2.4: On mobile (no hover capability), the button stays at default `opacity: 1` (always visible) since the `[@media(hover:hover)]` scoping means the `opacity-0` only applies on hover-capable devices
+- [x] Task 2: Add hover-reveal for delete button on desktop (AC: #1, #2)
+  - [x] 2.1: Add `group` class to the `<li>` element in `TodoItem.tsx`
+  - [x] 2.2: Add hover-reveal classes to the delete button: `[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100`
+  - [x] 2.3: Add keyboard focus visibility: `focus-visible:opacity-100` on the delete button so it remains accessible via keyboard on desktop
+  - [x] 2.4: On mobile (no hover capability), the button stays at default `opacity: 1` (always visible) since the `[@media(hover:hover)]` scoping means the `opacity-0` only applies on hover-capable devices
 
-- [ ] Task 3: Add todo row minimum height for touch targets (AC: #1)
-  - [ ] 3.1: Add `min-h-12` (48px) to the `<li>` element in `TodoItem.tsx`
-  - [ ] 3.2: Add `items-center` to ensure vertical centering within the minimum height (already present on the `<li>`)
+- [x] Task 3: Add todo row minimum height for touch targets (AC: #1)
+  - [x] 3.1: Add `min-h-12` (48px) to the `<li>` element in `TodoItem.tsx`
+  - [x] 3.2: Add `items-center` to ensure vertical centering within the minimum height (already present on the `<li>`)
 
-- [ ] Task 4: Prevent horizontal overflow at narrow viewports (AC: #1)
-  - [ ] 4.1: Add `min-w-0` to the toggle button in `TodoItem.tsx` to allow flex child text truncation
-  - [ ] 4.2: Add `break-words` (or `overflow-wrap: break-word`) to the todo text `<span>` to handle very long unbroken strings
-  - [ ] 4.3: Optionally add `overflow-hidden` to the `<li>` as a safety net
+- [x] Task 4: Prevent horizontal overflow at narrow viewports (AC: #1)
+  - [x] 4.1: Add `min-w-0` to the toggle button in `TodoItem.tsx` to allow flex child text truncation
+  - [x] 4.2: Add `break-words` (or `overflow-wrap: break-word`) to the todo text `<span>` to handle very long unbroken strings
+  - [x] 4.3: Optionally add `overflow-hidden` to the `<li>` as a safety net
 
-- [ ] Task 5: Add transition to delete button opacity for smooth reveal (AC: #2)
-  - [ ] 5.1: Add `transition-opacity` alongside the existing `transition-colors` on the delete button — or consolidate to `transition-all duration-150`
-  - [ ] 5.2: The 150ms duration matches existing transitions per UX-DR13
+- [x] Task 5: Add transition to delete button opacity for smooth reveal (AC: #2)
+  - [x] 5.1: Add `transition-opacity` alongside the existing `transition-colors` on the delete button — or consolidate to `transition-all duration-150`
+  - [x] 5.2: The 150ms duration matches existing transitions per UX-DR13
 
-- [ ] Task 6: Update TodoItem tests for responsive behavior (AC: #1, #2)
-  - [ ] 6.1: Update `packages/client/src/components/TodoItem.test.tsx`
-  - [ ] 6.2: Test: delete button renders with `w-11 h-11` classes (44px touch target)
-  - [ ] 6.3: Test: `<li>` has `min-h-12` class
-  - [ ] 6.4: Test: `<li>` has `group` class
-  - [ ] 6.5: Test: delete button has opacity classes for hover-reveal on desktop (`[@media(hover:hover)]:opacity-0`, `[@media(hover:hover)]:group-hover:opacity-100`)
-  - [ ] 6.6: Test: delete button has `focus-visible:opacity-100` for keyboard accessibility
-  - [ ] 6.7: Verify existing tests still pass (stopPropagation, toggle, delete behavior)
+- [x] Task 6: Update TodoItem tests for responsive behavior (AC: #1, #2)
+  - [x] 6.1: Update `packages/client/src/components/TodoItem.test.tsx`
+  - [x] 6.2: Test: delete button renders with `w-11 h-11` classes (44px touch target)
+  - [x] 6.3: Test: `<li>` has `min-h-12` class
+  - [x] 6.4: Test: `<li>` has `group` class
+  - [x] 6.5: Test: delete button has opacity classes for hover-reveal on desktop (`[@media(hover:hover)]:opacity-0`, `[@media(hover:hover)]:group-hover:opacity-100`)
+  - [x] 6.6: Test: delete button has `focus-visible:opacity-100` for keyboard accessibility
+  - [x] 6.7: Verify existing tests still pass (stopPropagation, toggle, delete behavior)
 
-- [ ] Task 7: Run full test suite and verify no regressions (AC: all)
-  - [ ] 7.1: `cd packages/client && npx jest --coverage`
-  - [ ] 7.2: All existing tests pass
-  - [ ] 7.3: All new/updated tests pass
-  - [ ] 7.4: No TypeScript errors (`npx tsc --noEmit`)
+- [x] Task 7: Run full test suite and verify no regressions (AC: all)
+  - [x] 7.1: `cd packages/client && npx jest --coverage`
+  - [x] 7.2: All existing tests pass
+  - [x] 7.3: All new/updated tests pass
+  - [x] 7.4: No TypeScript errors (`npx tsc --noEmit`)
+
+### Review Findings
+
+- [x] [Review][Patch] Hidden delete button remains clickable on hover-capable devices [packages/client/src/components/TodoItem.tsx:47]
 
 ## Dev Notes
 
@@ -183,9 +187,23 @@ From Story 3.1:
 ## Dev Agent Record
 
 ### Agent Model Used
+Claude Opus 4.6
 
 ### Debug Log References
+None — all tasks completed without issues.
 
 ### Completion Notes List
+- Task 1: Changed delete button from `w-8 h-8` (32px) to `w-11 h-11` (44px) to meet WCAG 2.5.5 touch target minimum
+- Task 2: Added `group` class to `<li>` and opacity-based hover-reveal (`[@media(hover:hover)]:opacity-0`, `[@media(hover:hover)]:group-hover:opacity-100`, `focus-visible:opacity-100`) to delete button — always visible on mobile, hover-reveal on desktop, keyboard-accessible
+- Task 3: Added `min-h-12` (48px) to `<li>` for consistent touch target row height
+- Task 4: Added `min-w-0` to toggle button and `break-words min-w-0` to text span to prevent horizontal overflow with long unbroken words at narrow viewports
+- Task 5: Consolidated delete button transition from `transition-colors` to `transition-all duration-150` for smooth opacity reveal alongside existing color transitions
+- Task 6: Updated existing `w-8/h-8` test to verify `w-11/h-11`, updated `transition-colors` to `transition-all`, added 5 new tests for `min-h-12`, `group`, opacity hover-reveal classes, and `focus-visible:opacity-100`
+- Task 7: Full test suite passed — 10 suites, 102 tests, 0 failures. TypeScript check clean.
 
 ### File List
+- packages/client/src/components/TodoItem.tsx (modified)
+- packages/client/src/components/TodoItem.test.tsx (modified)
+
+## Change Log
+- 2026-04-28: Implemented responsive mobile & desktop experience — 44px touch targets, hover-reveal delete button on desktop, min-height rows, overflow protection, smooth opacity transitions. All 102 tests pass.

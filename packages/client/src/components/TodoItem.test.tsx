@@ -109,21 +109,53 @@ describe('TodoItem', () => {
     expect(screen.getByLabelText('Delete task: Walk the dog')).toBeInTheDocument()
   })
 
-  it('delete button has 32px hit area styling classes', () => {
+  it('delete button has 44px touch target styling classes', () => {
     const todo = { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' }
     render(<TodoItem todo={todo} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
     const deleteButton = screen.getByLabelText('Delete task: Buy groceries')
-    expect(deleteButton.className).toContain('w-8')
-    expect(deleteButton.className).toContain('h-8')
+    expect(deleteButton.className).toContain('w-11')
+    expect(deleteButton.className).toContain('h-11')
   })
 
   it('delete button includes the required hover styling classes', () => {
     const todo = { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' }
     render(<TodoItem todo={todo} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
     const deleteButton = screen.getByLabelText('Delete task: Buy groceries')
-    expect(deleteButton.className).toContain('transition-colors')
+    expect(deleteButton.className).toContain('transition-all')
     expect(deleteButton.className).toContain('duration-150')
     expect(deleteButton.className).toContain('[@media(hover:hover)]:hover:text-[#EF4444]')
     expect(deleteButton.className).toContain('[@media(hover:hover)]:hover:bg-[#FEE2E2]')
+  })
+
+  it('li element has min-h-12 class for touch target minimum height', () => {
+    const todo = { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' }
+    const { container } = render(<TodoItem todo={todo} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    const li = container.querySelector('li')
+    expect(li?.className).toContain('min-h-12')
+  })
+
+  it('li element has group class for hover-reveal support', () => {
+    const todo = { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' }
+    const { container } = render(<TodoItem todo={todo} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    const li = container.querySelector('li')
+    expect(li?.className).toContain('group')
+  })
+
+  it('delete button has opacity classes for hover-reveal on desktop', () => {
+    const todo = { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' }
+    render(<TodoItem todo={todo} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    const deleteButton = screen.getByLabelText('Delete task: Buy groceries')
+    expect(deleteButton.className).toContain('[@media(hover:hover)]:pointer-events-none')
+    expect(deleteButton.className).toContain('[@media(hover:hover)]:opacity-0')
+    expect(deleteButton.className).toContain('[@media(hover:hover)]:group-hover:pointer-events-auto')
+    expect(deleteButton.className).toContain('[@media(hover:hover)]:group-hover:opacity-100')
+  })
+
+  it('delete button has focus-visible:opacity-100 for keyboard accessibility', () => {
+    const todo = { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' }
+    render(<TodoItem todo={todo} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    const deleteButton = screen.getByLabelText('Delete task: Buy groceries')
+    expect(deleteButton.className).toContain('focus-visible:pointer-events-auto')
+    expect(deleteButton.className).toContain('focus-visible:opacity-100')
   })
 })
