@@ -49,6 +49,7 @@ development_status:
   1-3-create-todo-full-stack: done
   1-4-display-todos-full-stack: done
   1-5-app-shell-and-layout: done
+  1-6-containerization-dockerfiles: ready-for-dev
   epic-1-retrospective: optional
 
   # Epic 2: Task Lifecycle — Complete & Delete

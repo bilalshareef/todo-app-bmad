@@ -283,9 +283,11 @@ src/
 - Accessible only from ECS tasks within the same VPC
 
 **Container Strategy:**
-- Multi-stage Docker build: TypeScript compile stage → slim Node.js production image
-- Docker Compose for local development: PostgreSQL container + backend container
-- Vite dev server runs natively (outside Docker) for fast HMR
+- Multi-stage Docker builds for both frontend (nginx static serving) and backend (slim Node.js production image)
+- Non-root user in all production containers (security hardening)
+- Health check instructions in all Dockerfiles (HEALTHCHECK directive)
+- Docker Compose for local development: PostgreSQL container + backend container + frontend container
+- Vite dev server runs natively (outside Docker) for fast HMR in development
 
 **Environment Configuration:**
 - Local: `.env` files (`.env.example` committed, `.env` gitignored)
@@ -500,6 +502,7 @@ todo-app-bmad/
 │   │   ├── package.json
 │   │   ├── tsconfig.json                 # Extends tsconfig.base.json
 │   │   ├── vite.config.ts
+│   │   ├── Dockerfile                    # Multi-stage production build (nginx)
 │   │   ├── index.html
 │   │   ├── public/
 │   │   │   └── favicon.ico

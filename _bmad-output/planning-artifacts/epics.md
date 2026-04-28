@@ -277,6 +277,36 @@ So that I can immediately see what the app does and start using it.
 **And** the TodoList renders below the input with 24px spacing
 **And** todo items have bottom borders (#F3F4F6) as dividers
 
+### Story 1.6: Containerization — Dockerfiles for Frontend & Backend
+
+As a developer,
+I want production-ready Dockerfiles for both the frontend and backend,
+So that the application can be built and deployed as containers in any environment.
+
+**Acceptance Criteria:**
+
+**Given** the backend package exists at `packages/server/`
+**When** a Docker image is built from its Dockerfile
+**Then** a multi-stage build is used: Stage 1 installs dependencies and compiles TypeScript, Stage 2 copies only the compiled output into a slim Node.js production image
+**And** the production image runs as a non-root user
+**And** a HEALTHCHECK instruction is defined that curls `GET /health`
+**And** the image exposes port 3000
+**And** `.dockerignore` excludes node_modules, dist, .env, and test files
+
+**Given** the frontend package exists at `packages/client/`
+**When** a Docker image is built from its Dockerfile
+**Then** a multi-stage build is used: Stage 1 installs dependencies and runs `vite build`, Stage 2 copies the built static assets into an nginx:alpine image
+**And** the production image runs as a non-root user
+**And** a HEALTHCHECK instruction is defined that curls the nginx server
+**And** the image exposes port 80
+**And** `.dockerignore` excludes node_modules, dist, .env, and test files
+
+**Given** both Dockerfiles exist
+**When** `docker compose up` is run with an updated docker-compose.yml
+**Then** the PostgreSQL, backend, and frontend containers all start
+**And** the backend connects to PostgreSQL and responds on /health
+**And** the frontend serves the app through nginx
+
 ## Epic 2: Task Lifecycle — Complete & Delete
 
 Users can mark todos as complete (with visual distinction and satisfaction) and delete todos. Optimistic UI with rollback on both operations.
