@@ -8,15 +8,8 @@ jest.mock('../api/todoApi')
 const mockedTodoApi = todoApi as jest.Mocked<typeof todoApi>
 
 describe('useTodos', () => {
-  const originalConsoleError = console.error
-
-  beforeEach(() => {
-    jest.spyOn(console, 'error').mockImplementation(() => undefined)
-  })
-
   afterEach(() => {
     jest.resetAllMocks()
-    console.error = originalConsoleError
   })
 
   it('starts with loading true', () => {
@@ -58,6 +51,141 @@ describe('useTodos', () => {
       expect(result.current.loading).toBe(false)
     })
     expect(result.current.todos).toEqual([])
+  })
+
+  it('calls onError with correct message when fetchTodos fails', async () => {
+    mockedTodoApi.fetchTodos.mockRejectedValue(new Error('Network error'))
+    const onError = jest.fn()
+
+    renderHook(() => useTodos(onError))
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledWith("Couldn't load your tasks — check your connection")
+    })
+  })
+
+  it('calls onError with correct message when addTodo fails', async () => {
+    mockedTodoApi.fetchTodos.mockResolvedValue([])
+    mockedTodoApi.createTodo.mockRejectedValue(new Error('Create failed'))
+    const onError = jest.fn()
+
+    const { result } = renderHook(() => useTodos(onError))
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await expect(
+      act(async () => {
+        await result.current.addTodo('Test')
+      }),
+    ).rejects.toThrow('Create failed')
+
+    expect(onError).toHaveBeenCalledWith("Couldn't save your task — check your connection and try again")
+  })
+
+  it('calls onError with correct message when toggleTodo fails', async () => {
+    const mockTodo = {
+      id: '1',
+      text: 'Test',
+      completed: false,
+      createdAt: '2026-04-26T00:00:00.000Z',
+      updatedAt: '2026-04-26T00:00:00.000Z',
+    }
+    mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo])
+    mockedTodoApi.updateTodo.mockRejectedValue(new Error('Update failed'))
+    const onError = jest.fn()
+
+    const { result } = renderHook(() => useTodos(onError))
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.toggleTodo('1')
+    })
+
+    expect(onError).toHaveBeenCalledWith("Couldn't update — check your connection")
+  })
+
+  it('calls onError with correct message when deleteTodo fails', async () => {
+    const mockTodo = {
+      id: '1',
+      text: 'Test',
+      completed: false,
+      createdAt: '2026-04-26T00:00:00.000Z',
+      updatedAt: '2026-04-26T00:00:00.000Z',
+    }
+    mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo])
+    mockedTodoApi.deleteTodo.mockRejectedValue(new Error('Delete failed'))
+    const onError = jest.fn()
+
+    const { result } = renderHook(() => useTodos(onError))
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.deleteTodo('1')
+    })
+
+    expect(onError).toHaveBeenCalledWith("Couldn't delete — check your connection")
+  })
+
+  it('does not call onError on successful operations', async () => {
+    const mockTodo = {
+      id: '1',
+      text: 'Test',
+      completed: false,
+      createdAt: '2026-04-26T00:00:00.000Z',
+      updatedAt: '2026-04-26T00:00:00.000Z',
+    }
+    mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo])
+    mockedTodoApi.createTodo.mockResolvedValue({ ...mockTodo, id: '2', text: 'New' })
+    mockedTodoApi.updateTodo.mockResolvedValue({ ...mockTodo, completed: true })
+    mockedTodoApi.deleteTodo.mockResolvedValue({ id: '1' })
+    const onError = jest.fn()
+
+    const { result } = renderHook(() => useTodos(onError))
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await act(async () => {
+      await result.current.addTodo('New')
+    })
+    await act(async () => {
+      await result.current.toggleTodo('1')
+    })
+    await act(async () => {
+      await result.current.deleteTodo('1')
+    })
+
+    expect(onError).not.toHaveBeenCalled()
+  })
+
+  it('addTodo still throws on failure for caller rollback', async () => {
+    mockedTodoApi.fetchTodos.mockResolvedValue([])
+    mockedTodoApi.createTodo.mockRejectedValue(new Error('API error'))
+    const onError = jest.fn()
+
+    const { result } = renderHook(() => useTodos(onError))
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    await expect(
+      act(async () => {
+        await result.current.addTodo('Test')
+      }),
+    ).rejects.toThrow('API error')
+
+    // Both onError called AND error thrown
+    expect(onError).toHaveBeenCalledTimes(1)
   })
 
   it('keeps todos added during loading when fetch resolves later', async () => {
@@ -135,8 +263,6 @@ describe('useTodos', () => {
         },
       ])
     })
-
-    expect(console.error).not.toHaveBeenCalled()
   })
 
   it('addTodo appends new todo to state', async () => {
@@ -291,7 +417,7 @@ describe('useTodos', () => {
     expect(mockedTodoApi.updateTodo).not.toHaveBeenCalled()
   })
 
-  it('toggleTodo logs and preserves state when update fails', async () => {
+  it('toggleTodo preserves state when update fails', async () => {
     const mockTodo = {
       id: '1',
       text: 'Buy groceries',
@@ -313,7 +439,6 @@ describe('useTodos', () => {
       await result.current.toggleTodo('1')
     })
 
-    expect(console.error).toHaveBeenCalledWith('Failed to update todo:', expect.any(Error))
     expect(result.current.todos).toEqual([mockTodo])
   })
 
@@ -428,7 +553,6 @@ describe('useTodos', () => {
       await result.current.deleteTodo('1')
     })
 
-    expect(console.error).toHaveBeenCalledWith('Failed to delete todo:', deleteError)
     expect(result.current.todos).toEqual(mockTodos)
   })
 })

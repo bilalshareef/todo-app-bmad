@@ -11,7 +11,7 @@ function mergeTodos(fetchedTodos: Todo[], currentTodos: Todo[]): Todo[] {
   return [...fetchedTodos, ...currentTodos.filter((todo) => !seenIds.has(todo.id))]
 }
 
-export function useTodos() {
+export function useTodos(onError?: (message: string) => void) {
   const [todos, setTodos] = useState<Todo[]>([])
   const [loading, setLoading] = useState(true)
   const pendingToggleIds = useRef(new Set<string>())
@@ -33,7 +33,7 @@ export function useTodos() {
           return
         }
 
-        console.error('Failed to fetch todos:', err)
+        onError?.("Couldn't load your tasks — check your connection")
         setLoading(false)
       })
 
@@ -43,8 +43,13 @@ export function useTodos() {
   }, [])
 
   async function addTodo(text: string): Promise<void> {
-    const newTodo = await apiCreateTodo(text)
-    setTodos((prev) => [...prev, newTodo])
+    try {
+      const newTodo = await apiCreateTodo(text)
+      setTodos((prev) => [...prev, newTodo])
+    } catch (error) {
+      onError?.("Couldn't save your task — check your connection and try again")
+      throw error
+    }
   }
 
   async function toggleTodo(id: string): Promise<void> {
@@ -61,7 +66,7 @@ export function useTodos() {
       const updatedTodo = await apiUpdateTodo(id, !todo.completed)
       setTodos((prev) => prev.map((t) => (t.id === id ? updatedTodo : t)))
     } catch (error) {
-      console.error('Failed to update todo:', error)
+      onError?.("Couldn't update — check your connection")
     } finally {
       pendingToggleIds.current.delete(id)
     }
@@ -72,7 +77,7 @@ export function useTodos() {
       await apiDeleteTodo(id)
       setTodos((prev) => prev.filter((t) => t.id !== id))
     } catch (error) {
-      console.error('Failed to delete todo:', error)
+      onError?.("Couldn't delete — check your connection")
     }
   }
 

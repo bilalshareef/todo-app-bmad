@@ -36,6 +36,17 @@ describe('TodoInput', () => {
     expect(input.value).toBe('')
   })
 
+  it('keeps input value when async submission fails', async () => {
+    const onSubmit = jest.fn().mockRejectedValue(new Error('Create failed'))
+    const user = userEvent.setup()
+    render(<TodoInput onSubmit={onSubmit} />)
+
+    const input = screen.getByLabelText('Add a new task') as HTMLInputElement
+    await user.type(input, 'Buy groceries{Enter}')
+
+    expect(input.value).toBe('Buy groceries')
+  })
+
   it('does not call onSubmit on Enter with empty input', async () => {
     const onSubmit = jest.fn()
     const user = userEvent.setup()

@@ -1,18 +1,23 @@
 import { useState, type KeyboardEvent } from 'react'
 
 interface TodoInputProps {
-  onSubmit: (text: string) => void
+  onSubmit: (text: string) => void | Promise<void>
 }
 
 export function TodoInput({ onSubmit }: TodoInputProps) {
   const [value, setValue] = useState('')
 
-  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+  async function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key !== 'Enter') return
     const trimmed = value.trim()
     if (!trimmed) return
-    onSubmit(trimmed)
-    setValue('')
+
+    try {
+      await onSubmit(trimmed)
+      setValue('')
+    } catch {
+      // Keep the current input value so failed submissions can be retried.
+    }
   }
 
   return (
