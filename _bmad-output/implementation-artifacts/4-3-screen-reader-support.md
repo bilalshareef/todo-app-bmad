@@ -1,6 +1,6 @@
 # Story 4.3: Screen Reader Support
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -53,58 +53,62 @@ so that I can fully understand and operate the app without visual cues.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add `<main>` landmark to AppShell (N/A — landmark navigation)
-  - [ ] 1.1: In `packages/client/src/components/AppShell.tsx`, change the inner `<div className="max-w-[640px] mx-auto ...">` to `<main className="max-w-[640px] mx-auto ...">` — this wraps all app content in a landmark
-  - [ ] 1.2: Keep the outer `<div className="min-h-screen bg-white">` as a `<div>` — it's just a background wrapper, not semantic content
-  - [ ] 1.3: Verify the `<h1>Todos</h1>` remains inside `<main>` — screen readers will announce "main landmark, heading level 1, Todos"
+- [x] Task 1: Add `<main>` landmark to AppShell (N/A — landmark navigation)
+  - [x] 1.1: In `packages/client/src/components/AppShell.tsx`, change the inner `<div className="max-w-[640px] mx-auto ...">` to `<main className="max-w-[640px] mx-auto ...">` — this wraps all app content in a landmark
+  - [x] 1.2: Keep the outer `<div className="min-h-screen bg-white">` as a `<div>` — it's just a background wrapper, not semantic content
+  - [x] 1.3: Verify the `<h1>Todos</h1>` remains inside `<main>` — screen readers will announce "main landmark, heading level 1, Todos"
 
-- [ ] Task 2: Fix Toast to keep `aria-live` region always mounted (AC: #5)
-  - [ ] 2.1: In `packages/client/src/components/Toast.tsx`, remove the early `return null` when `!visible`
-  - [ ] 2.2: Instead, always render the outer `<div>` with `role="alert"` and `aria-live="polite"` — when `!visible`, render it as an empty (but present) container
-  - [ ] 2.3: When `visible` is true, render the toast content (icon + message) inside the container with all visual styles
-  - [ ] 2.4: When `visible` is false, the container should be visually hidden but remain in the DOM. Use Tailwind `sr-only` or simply render with no children and no visual styles — the key is the `aria-live` region stays mounted
-  - [ ] 2.5: Ensure the existing animation classes (`animate-toast-slide-in`, `animate-toast-fade-out`) are only applied when `visible` is true
-  - [ ] 2.6: The empty live region tells screen readers "the alert has been resolved" when the toast dismisses
+- [x] Task 2: Fix Toast to keep `aria-live` region always mounted (AC: #5)
+  - [x] 2.1: In `packages/client/src/components/Toast.tsx`, remove the early `return null` when `!visible`
+  - [x] 2.2: Instead, always render the outer `<div>` with `role="alert"` and `aria-live="polite"` — when `!visible`, render it as an empty (but present) container
+  - [x] 2.3: When `visible` is true, render the toast content (icon + message) inside the container with all visual styles
+  - [x] 2.4: When `visible` is false, the container should be visually hidden but remain in the DOM. Use Tailwind `sr-only` or simply render with no children and no visual styles — the key is the `aria-live` region stays mounted
+  - [x] 2.5: Ensure the existing animation classes (`animate-toast-slide-in`, `animate-toast-fade-out`) are only applied when `visible` is true
+  - [x] 2.6: The empty live region tells screen readers "the alert has been resolved" when the toast dismisses
 
-- [ ] Task 3: Add persistent loading announcement region (AC: #6)
-  - [ ] 3.1: In `packages/client/src/components/TodoList.tsx`, add a persistent `aria-live="polite"` region with `sr-only` class BEFORE the conditional rendering of `LoadingIndicator`/`EmptyState`/`<ul>`
-  - [ ] 3.2: When `loading` is `true`, render `<span className="sr-only">Loading todos...</span>` inside the live region
-  - [ ] 3.3: When `loading` is `false`, render empty content inside the live region — the transition from text to empty tells screen readers loading is done
-  - [ ] 3.4: Keep the visual `LoadingIndicator` component as-is for sighted users — the persistent live region is separate and handles screen reader announcements
-  - [ ] 3.5: Remove `aria-live="polite"` from `LoadingIndicator.tsx` since the announcement is now handled by the persistent region in `TodoList` — this avoids duplicate announcements
+- [x] Task 3: Add persistent loading announcement region (AC: #6)
+  - [x] 3.1: In `packages/client/src/components/TodoList.tsx`, add a persistent `aria-live="polite"` region with `sr-only` class BEFORE the conditional rendering of `LoadingIndicator`/`EmptyState`/`<ul>`
+  - [x] 3.2: When `loading` is `true`, render `<span className="sr-only">Loading todos...</span>` inside the live region
+  - [x] 3.3: When `loading` is `false`, render empty content inside the live region — the transition from text to empty tells screen readers loading is done
+  - [x] 3.4: Keep the visual `LoadingIndicator` component as-is for sighted users — the persistent live region is separate and handles screen reader announcements
+  - [x] 3.5: Remove `aria-live="polite"` from `LoadingIndicator.tsx` since the announcement is now handled by the persistent region in `TodoList` — this avoids duplicate announcements
 
-- [ ] Task 4: Verify WCAG AA contrast compliance (AC: #7)
-  - [ ] 4.1: Audit the Tailwind config / CSS custom properties for the color tokens used in the app:
+- [x] Task 4: Verify WCAG AA contrast compliance (AC: #7)
+  - [x] 4.1: Audit the Tailwind config / CSS custom properties for the color tokens used in the app:
     - `near-black` (#111827) on white (#FFFFFF) → 15.4:1 ✅
     - `medium-gray` (#6B7280) on white (#FFFFFF) → 5.0:1 ✅
     - `completed-gray` (#9CA3AF) on white (#FFFFFF) → 2.9:1 — **decorative/completed text**, exempt from WCAG AA for text that conveys "done" status (has line-through as secondary indicator)
     - Placeholder (#6B7280) on warm-gray (#F9FAFB) → 4.7:1 ✅
     - Toast white (#FFFFFF) on dark (#1F2937) → 14.5:1 ✅
     - Error red (#EF4444) on dark (#1F2937) → 4.6:1 ✅
-  - [ ] 4.2: No color changes needed — all functional text meets WCAG AA 4.5:1 minimum. Completed todo text (#9CA3AF, 2.9:1) is below 4.5:1 but this is acceptable because: (a) the line-through provides a non-color indicator, (b) the text has already been acted upon and is not actionable, (c) WCAG SC 1.4.3 exempts "incidental" text — completed items are de-emphasized by design
+  - [x] 4.2: No color changes needed — all functional text meets WCAG AA 4.5:1 minimum. Completed todo text (#9CA3AF, 2.9:1) is below 4.5:1 but this is acceptable because: (a) the line-through provides a non-color indicator, (b) the text has already been acted upon and is not actionable, (c) WCAG SC 1.4.3 exempts "incidental" text — completed items are de-emphasized by design
 
-- [ ] Task 5: Update Toast tests (AC: #5)
-  - [ ] 5.1: In `packages/client/src/components/Toast.test.tsx`, update or add test: when `visible` is `false`, the `aria-live` region is still present in the DOM (but has no visible content)
-  - [ ] 5.2: Add test: when `visible` is `true`, the toast content (message text and warning icon) is rendered inside the `aria-live` region
-  - [ ] 5.3: Ensure existing tests for animation classes, auto-dismiss, role="alert" still pass
+- [x] Task 5: Update Toast tests (AC: #5)
+  - [x] 5.1: In `packages/client/src/components/Toast.test.tsx`, update or add test: when `visible` is `false`, the `aria-live` region is still present in the DOM (but has no visible content)
+  - [x] 5.2: Add test: when `visible` is `true`, the toast content (message text and warning icon) is rendered inside the `aria-live` region
+  - [x] 5.3: Ensure existing tests for animation classes, auto-dismiss, role="alert" still pass
 
-- [ ] Task 6: Update AppShell tests (AC: landmark)
-  - [ ] 6.1: In `packages/client/src/components/AppShell.test.tsx`, add test: the component renders a `<main>` element
-  - [ ] 6.2: Add test: the `<h1>Todos</h1>` heading is inside the `<main>` element
-  - [ ] 6.3: Ensure existing tests for layout, padding, title still pass
+- [x] Task 6: Update AppShell tests (AC: landmark)
+  - [x] 6.1: In `packages/client/src/components/AppShell.test.tsx`, add test: the component renders a `<main>` element
+  - [x] 6.2: Add test: the `<h1>Todos</h1>` heading is inside the `<main>` element
+  - [x] 6.3: Ensure existing tests for layout, padding, title still pass
 
-- [ ] Task 7: Update TodoList / LoadingIndicator tests (AC: #6)
-  - [ ] 7.1: In `packages/client/src/components/LoadingIndicator.test.tsx`, update tests to reflect removed `aria-live` attribute (if it had tests for it)
-  - [ ] 7.2: In `packages/client/src/components/TodoList.test.tsx` (or create if needed), add test: a persistent `aria-live="polite"` region exists regardless of loading state
-  - [ ] 7.3: Add test: when `loading` is `true`, the live region contains "Loading todos..." text
-  - [ ] 7.4: Add test: when `loading` is `false` and todos exist, the live region is empty
-  - [ ] 7.5: Ensure existing tests for LoadingIndicator visual rendering, EmptyState, and todo list still pass
+- [x] Task 7: Update TodoList / LoadingIndicator tests (AC: #6)
+  - [x] 7.1: In `packages/client/src/components/LoadingIndicator.test.tsx`, update tests to reflect removed `aria-live` attribute (if it had tests for it)
+  - [x] 7.2: In `packages/client/src/components/TodoList.test.tsx` (or create if needed), add test: a persistent `aria-live="polite"` region exists regardless of loading state
+  - [x] 7.3: Add test: when `loading` is `true`, the live region contains "Loading todos..." text
+  - [x] 7.4: Add test: when `loading` is `false` and todos exist, the live region is empty
+  - [x] 7.5: Ensure existing tests for LoadingIndicator visual rendering, EmptyState, and todo list still pass
 
-- [ ] Task 8: Run full test suite and verify no regressions (AC: all)
-  - [ ] 8.1: `cd packages/client && npx jest --coverage`
-  - [ ] 8.2: All existing tests pass
-  - [ ] 8.3: All new/updated tests pass
-  - [ ] 8.4: No TypeScript errors (`npx tsc --noEmit`)
+- [x] Task 8: Run full test suite and verify no regressions (AC: all)
+  - [x] 8.1: `cd packages/client && npx jest --coverage`
+  - [x] 8.2: All existing tests pass
+  - [x] 8.3: All new/updated tests pass
+  - [x] 8.4: No TypeScript errors (`npx tsc --noEmit`)
+
+### Review Findings
+
+- [x] [Review][Patch] Remove duplicate loading announcement from `LoadingIndicator` now that `TodoList` owns the persistent live region [`packages/client/src/components/LoadingIndicator.tsx:6`]
 
 ## Dev Notes
 
@@ -203,9 +207,33 @@ No new files. No changes to `hooks/`, `api/`, `App.tsx`, or backend.
 ## Dev Agent Record
 
 ### Agent Model Used
+Claude Opus 4.6 (GitHub Copilot)
 
 ### Debug Log References
+- No issues encountered during implementation.
 
 ### Completion Notes List
+- Task 1: Changed inner `<div>` to `<main>` in AppShell.tsx for landmark navigation. Outer `<div>` kept as background wrapper. `<h1>` remains inside `<main>`.
+- Task 2: Restructured Toast.tsx to always render the `role="alert"` + `aria-live="polite"` container. Visual content renders conditionally inside it. Empty container stays mounted when toast dismisses so screen readers detect resolution.
+- Task 3: Added persistent `aria-live="polite"` region with `sr-only` class in TodoList.tsx before conditional content. Transitions from "Loading todos..." to empty on fetch completion. Removed `aria-live` from LoadingIndicator.tsx to avoid duplicate announcements.
+- Task 4: Audited all color tokens in App.css — all functional text meets WCAG AA 4.5:1 minimum. No changes needed.
+- Tasks 5-7: Updated Toast, AppShell, and TodoList tests to match new behavior. Toast tests verify persistent live region. AppShell tests verify `<main>` landmark and heading containment. TodoList tests verify persistent aria-live region across loading states.
+- Task 8: Full test suite passes (115/115 tests, 10/10 suites). No TypeScript errors.
 
 ### File List
+- `packages/client/src/components/AppShell.tsx` — changed inner `<div>` to `<main>`
+- `packages/client/src/components/Toast.tsx` — restructured to persistent aria-live region
+- `packages/client/src/components/TodoList.tsx` — added persistent aria-live loading region
+- `packages/client/src/components/LoadingIndicator.tsx` — removed `aria-live="polite"` attribute
+- `packages/client/src/components/AppShell.test.tsx` — updated layout test, added `<main>` and heading tests
+- `packages/client/src/components/Toast.test.tsx` — updated for persistent aria-live behavior
+- `packages/client/src/components/TodoList.test.tsx` — added persistent aria-live region tests
+
+### Change Log
+- Implemented screen reader support improvements for Story 4.3 (Date: 2026-04-28)
+  - Added `<main>` landmark to AppShell for screen reader navigation
+  - Fixed Toast to keep `aria-live` region always mounted (persistent container pattern)
+  - Added persistent loading announcement region in TodoList with `sr-only` class
+  - Removed duplicate `aria-live` from LoadingIndicator
+  - Verified WCAG AA contrast compliance for all color tokens
+  - Updated tests for Toast, AppShell, TodoList to cover new accessibility behavior

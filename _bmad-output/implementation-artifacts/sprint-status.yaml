@@ -67,5 +67,5 @@ development_status:
   epic-4: in-progress
   4-1-responsive-mobile-and-desktop-experience: done
   4-2-keyboard-navigation-and-focus-management: done
-  4-3-screen-reader-support: ready-for-dev
+  4-3-screen-reader-support: done
   epic-4-retrospective: optional

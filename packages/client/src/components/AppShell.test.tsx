@@ -38,17 +38,17 @@ describe('AppShell', () => {
     })
 
     const heading = container.querySelector('h1')
-    const outerShell = heading?.parentElement?.parentElement
-    const innerShell = heading?.parentElement
+    const mainElement = heading?.closest('main')
+    const outerShell = mainElement?.parentElement
     const contentWrapper = container.querySelector('[data-testid="shell-child"]')?.parentElement
 
     expect(outerShell?.className).toContain('min-h-screen')
     expect(outerShell?.className).toContain('bg-white')
-    expect(innerShell?.className).toContain('max-w-[640px]')
-    expect(innerShell?.className).toContain('mx-auto')
-    expect(innerShell?.className).toContain('px-4')
-    expect(innerShell?.className).toContain('md:px-6')
-    expect(innerShell?.className).toContain('py-8')
+    expect(mainElement?.className).toContain('max-w-[640px]')
+    expect(mainElement?.className).toContain('mx-auto')
+    expect(mainElement?.className).toContain('px-4')
+    expect(mainElement?.className).toContain('md:px-6')
+    expect(mainElement?.className).toContain('py-8')
     expect(contentWrapper?.className).toContain('mt-6')
 
     await act(async () => {
@@ -80,6 +80,32 @@ describe('AppShell', () => {
     const child = container.querySelector('[data-testid="test-child"]')
     expect(child).not.toBeNull()
     expect(child!.textContent).toBe('Hello World')
+    await act(async () => {
+      root.unmount()
+    })
+  })
+
+  it('should render a <main> landmark element', async () => {
+    const root = createRoot(container)
+    await act(async () => {
+      root.render(<AppShell><p>child</p></AppShell>)
+    })
+    const mainElement = container.querySelector('main')
+    expect(mainElement).not.toBeNull()
+    await act(async () => {
+      root.unmount()
+    })
+  })
+
+  it('should render the h1 heading inside the <main> element', async () => {
+    const root = createRoot(container)
+    await act(async () => {
+      root.render(<AppShell><p>child</p></AppShell>)
+    })
+    const mainElement = container.querySelector('main')
+    const heading = mainElement?.querySelector('h1')
+    expect(heading).not.toBeNull()
+    expect(heading!.textContent).toBe('Todos')
     await act(async () => {
       root.unmount()
     })

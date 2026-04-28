@@ -62,19 +62,22 @@ export function TodoList({ todos, loading, onToggle, onDelete, inputRef }: TodoL
     })
   }
 
-  if (loading) {
-    return <LoadingIndicator />
-  }
-
-  if (todos.length === 0) {
-    return <EmptyState />
-  }
-
   return (
-    <ul aria-label="Todo list" className="divide-y divide-[#F3F4F6]">
-      {todos.map((todo) => (
-        <TodoItem key={todo.id} todo={todo} onToggle={onToggle} onDelete={handleDelete} registerRef={registerRef} />
-      ))}
-    </ul>
+    <>
+      <div aria-live="polite" className="sr-only">
+        {loading ? <span>Loading todos...</span> : null}
+      </div>
+      {loading ? (
+        <LoadingIndicator />
+      ) : todos.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <ul aria-label="Todo list" className="divide-y divide-[#F3F4F6]">
+          {todos.map((todo) => (
+            <TodoItem key={todo.id} todo={todo} onToggle={onToggle} onDelete={handleDelete} registerRef={registerRef} />
+          ))}
+        </ul>
+      )}
+    </>
   )
 }

@@ -57,4 +57,25 @@ describe('TodoList', () => {
     fireEvent.click(screen.getByLabelText('Delete task: Buy groceries'))
     expect(mockOnDelete).toHaveBeenCalledWith('1')
   })
+
+  it('renders a persistent aria-live region regardless of loading state', () => {
+    const { container } = render(<TodoList todos={[]} loading={false} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    const liveRegion = container.querySelector('[aria-live="polite"]')
+    expect(liveRegion).toBeInTheDocument()
+  })
+
+  it('shows "Loading todos..." in aria-live region when loading is true', () => {
+    const { container } = render(<TodoList todos={[]} loading={true} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    const liveRegion = container.querySelector('[aria-live="polite"]')
+    expect(liveRegion).toHaveTextContent('Loading todos...')
+  })
+
+  it('has empty aria-live region when loading is false and todos exist', () => {
+    const todos: Todo[] = [
+      { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' },
+    ]
+    const { container } = render(<TodoList todos={todos} loading={false} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    const liveRegion = container.querySelector('[aria-live="polite"]')
+    expect(liveRegion).toBeEmptyDOMElement()
+  })
 })
