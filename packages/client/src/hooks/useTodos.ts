@@ -28,7 +28,7 @@ export function useTodos(onError?: (message: string) => void) {
         setTodos((currentTodos) => mergeTodos(data, currentTodos))
         setLoading(false)
       })
-      .catch((err) => {
+      .catch(() => {
         if (!isActive) {
           return
         }
@@ -70,7 +70,7 @@ export function useTodos(onError?: (message: string) => void) {
       const updatedTodo = await apiUpdateTodo(id, newCompleted)
       // Replace with server data (has correct updatedAt)
       setTodos((prev) => prev.map((t) => (t.id === id ? updatedTodo : t)))
-    } catch (error) {
+    } catch {
       // Revert to original state
       setTodos((prev) => prev.map((t) => t.id === id ? { ...t, completed: todo.completed } : t))
       onError?.("Couldn't update — check your connection")
@@ -91,7 +91,7 @@ export function useTodos(onError?: (message: string) => void) {
 
     try {
       await apiDeleteTodo(id)
-    } catch (error) {
+    } catch {
       // Restore near the original neighbors so concurrent list changes do not drift the order.
       setTodos((prev) => {
         if (prev.some((todo) => todo.id === id)) {

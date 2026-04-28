@@ -74,4 +74,19 @@ describe('TodoInput', () => {
     const input = screen.getByLabelText('Add a new task')
     expect(input).toHaveFocus()
   })
+
+  it('has focus-visible ring classes for keyboard accessibility', () => {
+    render(<TodoInput onSubmit={jest.fn()} />)
+    const input = screen.getByLabelText('Add a new task')
+    expect(input.className).toContain('focus-visible:ring-2')
+    expect(input.className).toContain('focus-visible:ring-blue-500')
+    expect(input.className).toContain('focus-visible:ring-offset-2')
+    expect(input.className).toContain('focus:outline-none')
+  })
+
+  it('supports ref forwarding', () => {
+    const ref = { current: null } as React.RefObject<HTMLInputElement | null>
+    render(<TodoInput ref={ref} onSubmit={jest.fn()} />)
+    expect(ref.current).toBeInstanceOf(HTMLInputElement)
+  })
 })

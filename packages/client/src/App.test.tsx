@@ -161,5 +161,123 @@ describe('App', () => {
       expect(screen.getByRole('alert')).toBeInTheDocument()
       expect(screen.getByText("Couldn't delete — check your connection")).toBeInTheDocument()
     })
+
+    await waitFor(() => {
+      expect(screen.getByRole('checkbox', { name: 'Only todo' })).toHaveFocus()
+    })
+  })
+
+  it('moves focus to next todo toggle button after deleting a todo', async () => {
+    const user = userEvent.setup()
+    mockedTodoApi.fetchTodos.mockResolvedValue([
+      {
+        id: '1',
+        text: 'First todo',
+        completed: false,
+        createdAt: '2026-04-26T00:00:00.000Z',
+        updatedAt: '2026-04-26T00:00:00.000Z',
+      },
+      {
+        id: '2',
+        text: 'Second todo',
+        completed: false,
+        createdAt: '2026-04-26T00:00:00.000Z',
+        updatedAt: '2026-04-26T00:00:00.000Z',
+      },
+    ])
+    mockedTodoApi.deleteTodo.mockResolvedValue({ id: '1' })
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByText('First todo')).toBeInTheDocument()
+    })
+
+    const deleteButton = screen.getByLabelText('Delete task: First todo')
+    deleteButton.focus()
+    await user.keyboard('{Enter}')
+
+    await waitFor(() => {
+      expect(screen.queryByText('First todo')).not.toBeInTheDocument()
+    })
+
+    // requestAnimationFrame callback needs to fire
+    await waitFor(() => {
+      const secondToggle = screen.getByRole('checkbox', { name: 'Second todo' })
+      expect(secondToggle).toHaveFocus()
+    })
+  })
+
+  it('moves focus to previous todo toggle button after deleting the last todo in list', async () => {
+    const user = userEvent.setup()
+    mockedTodoApi.fetchTodos.mockResolvedValue([
+      {
+        id: '1',
+        text: 'First todo',
+        completed: false,
+        createdAt: '2026-04-26T00:00:00.000Z',
+        updatedAt: '2026-04-26T00:00:00.000Z',
+      },
+      {
+        id: '2',
+        text: 'Second todo',
+        completed: false,
+        createdAt: '2026-04-26T00:00:00.000Z',
+        updatedAt: '2026-04-26T00:00:00.000Z',
+      },
+    ])
+    mockedTodoApi.deleteTodo.mockResolvedValue({ id: '2' })
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Second todo')).toBeInTheDocument()
+    })
+
+    const deleteButton = screen.getByLabelText('Delete task: Second todo')
+    deleteButton.focus()
+    await user.keyboard('{Enter}')
+
+    await waitFor(() => {
+      expect(screen.queryByText('Second todo')).not.toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      const firstToggle = screen.getByRole('checkbox', { name: 'First todo' })
+      expect(firstToggle).toHaveFocus()
+    })
+  })
+
+  it('moves focus to input field after deleting the only todo', async () => {
+    const user = userEvent.setup()
+    mockedTodoApi.fetchTodos.mockResolvedValue([
+      {
+        id: '1',
+        text: 'Only todo',
+        completed: false,
+        createdAt: '2026-04-26T00:00:00.000Z',
+        updatedAt: '2026-04-26T00:00:00.000Z',
+      },
+    ])
+    mockedTodoApi.deleteTodo.mockResolvedValue({ id: '1' })
+
+    render(<App />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Only todo')).toBeInTheDocument()
+    })
+
+    const deleteButton = screen.getByLabelText('Delete task: Only todo')
+    deleteButton.focus()
+    await user.keyboard('{Enter}')
+
+    await waitFor(() => {
+      expect(screen.queryByText('Only todo')).not.toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      const input = screen.getByLabelText('Add a new task')
+      expect(input).toHaveFocus()
+    })
   })
 })

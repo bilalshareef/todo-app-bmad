@@ -158,4 +158,32 @@ describe('TodoItem', () => {
     expect(deleteButton.className).toContain('focus-visible:pointer-events-auto')
     expect(deleteButton.className).toContain('focus-visible:opacity-100')
   })
+
+  it('toggle button has focus-visible ring classes for keyboard accessibility', () => {
+    const todo = { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' }
+    render(<TodoItem todo={todo} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    const toggleButton = screen.getByRole('checkbox', { name: 'Buy groceries' })
+    expect(toggleButton.className).toContain('focus-visible:ring-2')
+    expect(toggleButton.className).toContain('focus-visible:ring-blue-500')
+    expect(toggleButton.className).toContain('focus-visible:ring-offset-2')
+    expect(toggleButton.className).toContain('focus:outline-none')
+  })
+
+  it('delete button has focus-visible ring classes for keyboard accessibility', () => {
+    const todo = { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' }
+    render(<TodoItem todo={todo} onToggle={mockOnToggle} onDelete={mockOnDelete} />)
+    const deleteButton = screen.getByLabelText('Delete task: Buy groceries')
+    expect(deleteButton.className).toContain('focus-visible:ring-2')
+    expect(deleteButton.className).toContain('focus-visible:ring-blue-500')
+    expect(deleteButton.className).toContain('focus-visible:ring-offset-2')
+    expect(deleteButton.className).toContain('focus:outline-none')
+  })
+
+  it('calls registerRef with todo.id and the toggle button element on mount', () => {
+    const todo = { id: '1', text: 'Buy groceries', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' }
+    const mockRegisterRef = jest.fn()
+    render(<TodoItem todo={todo} onToggle={mockOnToggle} onDelete={mockOnDelete} registerRef={mockRegisterRef} />)
+    const toggleButton = screen.getByRole('checkbox', { name: 'Buy groceries' })
+    expect(mockRegisterRef).toHaveBeenCalledWith('1', toggleButton)
+  })
 })
