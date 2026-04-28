@@ -371,6 +371,50 @@ describe('useTodos', () => {
     })
 
     expect(mockedTodoApi.updateTodo).toHaveBeenCalledWith('1', true)
+    // After API resolves, state reflects server response (with correct updatedAt)
+    expect(result.current.todos).toEqual([updatedTodo])
+  })
+
+  it('toggleTodo applies optimistic update immediately before API resolves', async () => {
+    const mockTodo = {
+      id: '1',
+      text: 'Buy groceries',
+      completed: false,
+      createdAt: '2026-04-26T00:00:00.000Z',
+      updatedAt: '2026-04-26T00:00:00.000Z',
+    }
+    const updatedTodo = { ...mockTodo, completed: true, updatedAt: '2026-04-26T00:00:01.000Z' }
+
+    let resolveUpdate: ((todo: typeof updatedTodo) => void) | undefined
+    mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo])
+    mockedTodoApi.updateTodo.mockImplementation(
+      () => new Promise((resolve) => {
+        resolveUpdate = resolve
+      }),
+    )
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    // Start toggle but don't resolve the API yet
+    let togglePromise: Promise<void>
+    act(() => {
+      togglePromise = result.current.toggleTodo('1')
+    })
+
+    // State should be optimistically updated before API resolves
+    expect(result.current.todos[0].completed).toBe(true)
+
+    // Now resolve the API
+    await act(async () => {
+      resolveUpdate?.(updatedTodo)
+      await togglePromise!
+    })
+
+    // After API resolves, state reflects server response
     expect(result.current.todos).toEqual([updatedTodo])
   })
 
@@ -426,8 +470,13 @@ describe('useTodos', () => {
       updatedAt: '2026-04-26T00:00:00.000Z',
     }
 
+    let rejectUpdate: ((error: Error) => void) | undefined
     mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo])
-    mockedTodoApi.updateTodo.mockRejectedValue(new Error('Failed to update todo: 500'))
+    mockedTodoApi.updateTodo.mockImplementation(
+      () => new Promise((_resolve, reject) => {
+        rejectUpdate = reject
+      }),
+    )
 
     const { result } = renderHook(() => useTodos())
 
@@ -435,8 +484,19 @@ describe('useTodos', () => {
       expect(result.current.loading).toBe(false)
     })
 
+    // Start toggle — state changes optimistically
+    let togglePromise: Promise<void>
+    act(() => {
+      togglePromise = result.current.toggleTodo('1')
+    })
+
+    // State should be optimistically updated
+    expect(result.current.todos[0].completed).toBe(true)
+
+    // API fails — state should revert
     await act(async () => {
-      await result.current.toggleTodo('1')
+      rejectUpdate?.(new Error('Failed to update todo: 500'))
+      await togglePromise!
     })
 
     expect(result.current.todos).toEqual([mockTodo])
@@ -474,6 +534,7 @@ describe('useTodos', () => {
     })
 
     expect(mockedTodoApi.updateTodo).toHaveBeenCalledTimes(1)
+    // After API resolves, state reflects server response
     expect(result.current.todos).toEqual([updatedTodo])
   })
 
@@ -507,6 +568,56 @@ describe('useTodos', () => {
     })
 
     expect(mockedTodoApi.deleteTodo).toHaveBeenCalledWith('1')
+    // Todo removed optimistically and stays removed after API success
+    expect(result.current.todos).toEqual([mockTodo2])
+  })
+
+  it('deleteTodo applies optimistic removal immediately before API resolves', async () => {
+    const mockTodo1 = {
+      id: '1',
+      text: 'Buy groceries',
+      completed: false,
+      createdAt: '2026-04-26T00:00:00.000Z',
+      updatedAt: '2026-04-26T00:00:00.000Z',
+    }
+    const mockTodo2 = {
+      id: '2',
+      text: 'Walk the dog',
+      completed: false,
+      createdAt: '2026-04-26T00:00:01.000Z',
+      updatedAt: '2026-04-26T00:00:01.000Z',
+    }
+
+    let resolveDelete: ((value: { id: string }) => void) | undefined
+    mockedTodoApi.fetchTodos.mockResolvedValue([mockTodo1, mockTodo2])
+    mockedTodoApi.deleteTodo.mockImplementation(
+      () => new Promise((resolve) => {
+        resolveDelete = resolve
+      }),
+    )
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    // Start delete but don't resolve the API yet
+    let deletePromise: Promise<void>
+    act(() => {
+      deletePromise = result.current.deleteTodo('1')
+    })
+
+    // State should be optimistically updated — todo removed immediately
+    expect(result.current.todos).toEqual([mockTodo2])
+
+    // Now resolve the API
+    await act(async () => {
+      resolveDelete?.({ id: '1' })
+      await deletePromise!
+    })
+
+    // After API resolves, todo still removed
     expect(result.current.todos).toEqual([mockTodo2])
   })
 
@@ -539,9 +650,13 @@ describe('useTodos', () => {
       { id: '2', text: 'Second', completed: true, createdAt: '2026-04-26T00:00:01.000Z', updatedAt: '2026-04-26T00:00:01.000Z' },
     ]
 
+    let rejectDelete: ((error: Error) => void) | undefined
     mockedTodoApi.fetchTodos.mockResolvedValue(mockTodos)
-    const deleteError = new Error('Failed to delete todo: 500')
-    mockedTodoApi.deleteTodo.mockRejectedValue(deleteError)
+    mockedTodoApi.deleteTodo.mockImplementation(
+      () => new Promise((_resolve, reject) => {
+        rejectDelete = reject
+      }),
+    )
 
     const { result } = renderHook(() => useTodos())
 
@@ -549,10 +664,109 @@ describe('useTodos', () => {
       expect(result.current.loading).toBe(false)
     })
 
+    // Start delete — state changes optimistically
+    let deletePromise: Promise<void>
+    act(() => {
+      deletePromise = result.current.deleteTodo('1')
+    })
+
+    // State should be optimistically updated — todo removed
+    expect(result.current.todos).toEqual([mockTodos[1]])
+
+    // API fails — state should revert, todo restored to original position
     await act(async () => {
-      await result.current.deleteTodo('1')
+      rejectDelete?.(new Error('Failed to delete todo: 500'))
+      await deletePromise!
     })
 
     expect(result.current.todos).toEqual(mockTodos)
+  })
+
+  it('deleteTodo restores todo to correct position on failure', async () => {
+    const mockTodos = [
+      { id: '1', text: 'A', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' },
+      { id: '2', text: 'B', completed: false, createdAt: '2026-04-26T00:00:01.000Z', updatedAt: '2026-04-26T00:00:01.000Z' },
+      { id: '3', text: 'C', completed: false, createdAt: '2026-04-26T00:00:02.000Z', updatedAt: '2026-04-26T00:00:02.000Z' },
+    ]
+
+    mockedTodoApi.fetchTodos.mockResolvedValue(mockTodos)
+    mockedTodoApi.deleteTodo.mockRejectedValue(new Error('Delete failed'))
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    // Delete middle todo B — API fails — B is restored between A and C
+    await act(async () => {
+      await result.current.deleteTodo('2')
+    })
+
+    expect(result.current.todos).toEqual(mockTodos)
+    expect(result.current.todos[0].text).toBe('A')
+    expect(result.current.todos[1].text).toBe('B')
+    expect(result.current.todos[2].text).toBe('C')
+  })
+
+  it('deleteTodo restores relative order when another optimistic delete succeeds first', async () => {
+    const mockTodos = [
+      { id: '1', text: 'A', completed: false, createdAt: '2026-04-26T00:00:00.000Z', updatedAt: '2026-04-26T00:00:00.000Z' },
+      { id: '2', text: 'B', completed: false, createdAt: '2026-04-26T00:00:01.000Z', updatedAt: '2026-04-26T00:00:01.000Z' },
+      { id: '3', text: 'C', completed: false, createdAt: '2026-04-26T00:00:02.000Z', updatedAt: '2026-04-26T00:00:02.000Z' },
+      { id: '4', text: 'D', completed: false, createdAt: '2026-04-26T00:00:03.000Z', updatedAt: '2026-04-26T00:00:03.000Z' },
+    ]
+
+    let resolveDeleteA: ((value: { id: string }) => void) | undefined
+    let rejectDeleteB: ((error: Error) => void) | undefined
+
+    mockedTodoApi.fetchTodos.mockResolvedValue(mockTodos)
+    mockedTodoApi.deleteTodo.mockImplementation((id: string) => {
+      if (id === '2') {
+        return new Promise((_resolve, reject) => {
+          rejectDeleteB = reject
+        })
+      }
+
+      if (id === '1') {
+        return new Promise((resolve) => {
+          resolveDeleteA = resolve
+        })
+      }
+
+      return Promise.resolve({ id })
+    })
+
+    const { result } = renderHook(() => useTodos())
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false)
+    })
+
+    let deleteBPromise: Promise<void>
+    act(() => {
+      deleteBPromise = result.current.deleteTodo('2')
+    })
+
+    expect(result.current.todos.map((todo) => todo.id)).toEqual(['1', '3', '4'])
+
+    let deleteAPromise: Promise<void>
+    act(() => {
+      deleteAPromise = result.current.deleteTodo('1')
+    })
+
+    expect(result.current.todos.map((todo) => todo.id)).toEqual(['3', '4'])
+
+    await act(async () => {
+      resolveDeleteA?.({ id: '1' })
+      await deleteAPromise!
+    })
+
+    await act(async () => {
+      rejectDeleteB?.(new Error('Delete failed'))
+      await deleteBPromise!
+    })
+
+    expect(result.current.todos.map((todo) => todo.id)).toEqual(['2', '3', '4'])
   })
 })
